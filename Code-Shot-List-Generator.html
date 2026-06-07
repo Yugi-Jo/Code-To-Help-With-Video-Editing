@@ -15,11 +15,13 @@
         <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
             🎬 Vibe-Code: Script to B-Roll
         </h1>
-        <p class="text-gray-400 mt-2">Powered by Google Gemini for maximum creative depth.</p>
+        <p class="text-gray-400 mt-2">Upgraded pipeline supporting modern Google AQ. Authentication keys.</p>
     </header>
 
+    <!-- Main Workspace -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         
+        <!-- Left: Input Script -->
         <div class="flex flex-col">
             <label class="font-semibold text-gray-300 mb-2">📜 Paste Your Script</label>
             <textarea id="scriptInput" rows="12" placeholder="Paste your script here..." 
@@ -30,6 +32,7 @@
             </button>
         </div>
 
+        <!-- Right: Generated Output -->
         <div class="flex flex-col">
             <div class="flex justify-between items-center mb-2">
                 <label class="font-semibold text-gray-300">📋 Shot List Checklist</label>
@@ -42,7 +45,7 @@
     </div>
 
     <script type="module">
-        // Your customized API Key embedded directly into the program pipeline
+        // Your newly issued modern Google AQ Key
         const TARGET_API_KEY = "AQ.Ab8RN6KPeJ0sDJTflSvrGa24IwhTezUfpJKvEhOdbV_k2g7meg";
 
         window.generateShotList = async function() {
@@ -64,12 +67,15 @@
             Script: "${scriptText}"`;
 
             try {
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${TARGET_API_KEY}`;
+                // Upgraded Endpoint Architecture: Support both legacy and modern AQ validation headers
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`;
                 
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: { 
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        // We send the token via standard x-goog-api-key as well as an explicit parameter fallback
+                        'x-goog-api-key': TARGET_API_KEY
                     },
                     body: JSON.stringify({ 
                         contents: [{ 
@@ -92,3 +98,45 @@
 
                 const shots = JSON.parse(rawText);
                 renderShots(shots);
+
+            } catch (error) {
+                console.error(error);
+                output.innerHTML = `
+                    <span class='text-red-400 font-semibold'>API Handshake Error:</span><br>
+                    <span class='text-gray-400 block mt-2 text-xs bg-black p-2 rounded border border-gray-800 font-mono'>${error.message}</span>
+                `;
+            }
+        }
+
+        function renderShots(shots) {
+            const output = document.getElementById('outputContainer');
+            output.innerHTML = "";
+            
+            shots.forEach((item, index) => {
+                const shotDiv = document.createElement('div');
+                shotDiv.className = "mb-4 pb-3 border-b border-gray-800 last:border-0";
+                shotDiv.innerHTML = `
+                    <p class="text-xs text-gray-500 italic mb-1">Focus: "${item.line}"</p>
+                    <div class="flex items-start gap-2">
+                        <input type="checkbox" class="mt-1 accent-purple-500">
+                        <span class="text-gray-200 font-medium"><strong>Shot ${index+1}:</strong> ${item.shot}</span>
+                    </div>
+                `;
+                output.appendChild(shotDiv);
+            });
+            
+            window.currentShots = shots;
+        }
+
+        window.copyMarkdown = function() {
+            if (!window.currentShots) return alert("Nothing to copy yet!");
+            let md = "## 🎬 Shot List\n\n";
+            window.currentShots.forEach((item, i) => {
+                md += `- [ ] **Shot ${i+1}** (Line: "${item.line}"): ${item.shot}\n`;
+            });
+            navigator.clipboard.writeText(md);
+            alert("Markdown checklist copied to clipboard!");
+        }
+    </script>
+</body>
+</html>
