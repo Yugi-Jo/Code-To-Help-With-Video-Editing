@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🎬 Vibe-Code Workflow Matrix</title>
-    <script src="https://cdn.jsdelivr.net/npm/@unocss/runtime"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@unocss/runtime/uno.global.js"></script>
     <style>
         body { background-color: #0b0f19; color: #f3f4f6; font-family: sans-serif; }
     </style>
@@ -61,7 +61,7 @@
     </div>
 
     <script>
-        // Core thematic matrix dictionary with perfectly matched structural keys
+        // Dictionary matrix configuration
         const scriptThematicMap = [
             {
                 triggers: ['robot', 'mecha', 'monster', 'action', 'explosion', 'flashy'],
@@ -96,34 +96,39 @@
         ];
 
         window.generateMatrixShots = function() {
-            const scriptInputEl = document.getElementById('scriptInput');
-            const outputEl = document.getElementById('outputContainer');
-            const scopeSelect = document.getElementById('timeScope');
-            const difficultySelect = document.getElementById('difficultyLevel');
+            try {
+                const scriptInputEl = document.getElementById('scriptInput');
+                const outputEl = document.getElementById('outputContainer');
+                const scopeSelect = document.getElementById('timeScope');
+                const difficultySelect = document.getElementById('difficultyLevel');
 
-            if (!scriptInputEl || !outputEl || !scopeSelect || !difficultySelect) {
-                console.error("Missing UI DOM elements!");
-                return;
-            }
+                if (!scriptInputEl || !outputEl || !scopeSelect || !difficultySelect) {
+                    alert("UI loading error, please refresh page.");
+                    return;
+                }
 
-            const scriptText = scriptInputEl.value.trim();
-            const scope = scopeSelect.value;
-            const difficulty = difficultySelect.value;
+                const scriptText = scriptInputEl.value.trim();
+                const scope = scopeSelect.value;
+                const difficulty = difficultySelect.value;
 
-            if (!scriptText) {
-                alert('Please paste a script first!');
-                return;
-            }
+                if (!scriptText) {
+                    alert('Please paste a script first!');
+                    return;
+                }
 
-            outputEl.innerHTML = "<span class='text-purple-400 animate-pulse'>Re-indexing your editing timeline parameters... ⚙️</span>";
+                outputEl.innerHTML = "<span class='text-purple-400 animate-pulse'>Re-indexing your editing timeline parameters... ⚙️</span>";
 
-            setTimeout(() => {
-                const sentences = scriptText.split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 15);
+                // Split script cleanly into logic lines
+                const sentences = scriptText.split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 10);
                 let processingBlocks = [];
 
-                for (let i = 0; i < sentences.length; i += 2) {
-                    const block = sentences.slice(i, i + 2).join('. ') + '.';
-                    if (block.length > 20) processingBlocks.push(block);
+                if (sentences.length <= 1) {
+                    processingBlocks.push(scriptText);
+                } else {
+                    for (let i = 0; i < sentences.length; i += 2) {
+                        const block = sentences.slice(i, i + 2).join('. ') + '.';
+                        if (block.length > 12) processingBlocks.push(block);
+                    }
                 }
 
                 let finalBlueprint = [];
@@ -148,27 +153,93 @@
                     let taskBreakdown = "";
                     let stepWarning = "";
 
+                    // Safe fallback assignment loop completely eliminates unhandled dictionary exceptions
                     if (bestThematicMatch && topMatchScore > 0) {
                         assetTitle = bestThematicMatch.title;
-                        taskBreakdown = bestThematicMatch[scope];
-                        stepWarning = bestThematicMatch[difficulty];
+                        taskBreakdown = bestThematicMatch[scope] || "Process narrative clip according to project specifications.";
+                        stepWarning = bestThematicMatch[difficulty] || "Monitor active production metrics.";
                     } else {
-                        // Fallback logic cleanly matching standardized dropdown key configurations
+                        // Dynamic algorithmic fallback assignment blocks
                         if (scope === 'level1') {
-                            taskBreakdown = "Fast clip search on web tools. Simple Razor cutting timeline adjustments in Premiere Pro with basic text assets.";
+                            assetTitle = "⏱️ Micro Workflow Sync";
+                            taskBreakdown = "Fast clip search using online web tools. Slice a basic 10-30s viral segment in Premiere Pro, use a simple text layout overlay, and apply a standard LUT style layer.";
                         } else if (scope === 'level2') {
-                            taskBreakdown = "Intermediate asset processing: Build custom sound overlays (risers, whooshes) and design structural layout animations using position tracking keyframes.";
+                            assetTitle = "⏳ Short-Form Production Sync";
+                            taskBreakdown = "Custom sequence building: Extract high-pacing highlights from master logs, build dynamic frame modifications, and deploy structural sound sweeps (whooshes/risers) in Premiere Pro.";
                         } else {
-                            taskBreakdown = "Advanced environment orchestration: Link heavy composition sequences to processing tools, coordinating high-bitrate long-form assets.";
+                            assetTitle = "📆 Macro Production Grid";
+                            taskBreakdown = "Complex multi-layered canvas setup: Coordinate massive asset imports, construct geometric spatial animations, or compile dynamic web components into isolated graphic files.";
                         }
 
                         if (difficulty === 'beginner') {
-                            stepWarning = "Beginner Track: Rely on timeline defaults and drag-and-drop actions.";
+                            stepWarning = "Workflow Tier: Beginner. Rely on default timeline presets, basic shape adjustments, and straightforward import methods.";
                         } else if (difficulty === 'intermediate') {
-                            stepWarning = "Intermediate Track: Clean multi-track asset arrangement using manual scale/position values.";
+                            stepWarning = "Workflow Tier: Intermediate. Implement track keyframes for customized position/scale animations, run basic UV texturing, and debug basic source syntax.";
                         } else {
-                            stepWarning = "Advanced Track: Manual adjustment of asset pipelines, handling file sync failures or memory allocation limits.";
+                            stepWarning = "Workflow Tier: Advanced. Coordinate heavy multi-cam nesting lines, configure Geometry Node trees, or interface advanced runtime animations.";
                         }
                     }
 
-                    let displayTruncatedLine = block.length > 85 ? block.substring
+                    let displayTruncatedLine = block.length > 85 ? block.substring(0, 82) + "..." : block;
+
+                    finalBlueprint.push({
+                        title: assetTitle,
+                        line: displayTruncatedLine,
+                        task: taskBreakdown,
+                        warning: stepWarning
+                    });
+                });
+
+                renderMatrixUI(finalBlueprint);
+
+            } catch (globalError) {
+                console.error("System Matrix Exception Handler triggered:", globalError);
+                document.getElementById('outputContainer').innerHTML = 
+                    `<span class='text-red-400'>Error executing parameters: ${globalError.message}. Please click generate again.</span>`;
+            }
+        }
+
+        function renderMatrixUI(blueprint) {
+            const outputEl = document.getElementById('outputContainer');
+            if (!outputEl) return;
+            
+            outputEl.innerHTML = "";
+            
+            blueprint.forEach((item, index) => {
+                const stepBlock = document.createElement('div');
+                stepBlock.className = "mb-6 pb-4 border-b border-gray-800 last:border-0 bg-gray-950 p-4 rounded-xl shadow-inner border border-gray-900";
+                stepBlock.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-bold px-2 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-800">${item.title}</span>
+                        <span class="text-gray-500 font-mono text-xs">Asset ${index+1}</span>
+                    </div>
+                    <p class="text-xs text-gray-500 italic mb-3">Script Beat: "${item.line}"</p>
+                    <div class="flex items-start gap-3">
+                        <input type="checkbox" class="mt-1 accent-pink-500 w-4 h-4 rounded">
+                        <div class="flex-1">
+                            <p class="text-gray-200 font-medium text-sm leading-relaxed">${item.task}</p>
+                            <p class="text-xs font-mono text-pink-400 mt-2 bg-pink-950/30 p-1.5 px-2.5 rounded border border-pink-900/30">💡 ${item.warning}</p>
+                        </div>
+                    </div>
+                `;
+                outputEl.appendChild(stepBlock);
+            });
+            
+            window.currentBlueprint = blueprint;
+        }
+
+        window.copyMarkdown = function() {
+            if (!window.currentBlueprint) return alert("Nothing to copy yet!");
+            let md = "# 🎬 Production Blueprint & Asset Guide\n\n";
+            window.currentBlueprint.forEach((item, i) => {
+                md += `### Asset ${i+1}: ${item.title}\n`;
+                md += `- **Script Focus**: "${item.line}"\n`;
+                md += `- [ ] **Task Plan**: ${item.task}\n`;
+                md += `- **Technical Requirements**: ${item.warning}\n\n`;
+            });
+            navigator.clipboard.writeText(md);
+            alert("Customized production blueprint markdown copied to clipboard!");
+        }
+    </script>
+</body>
+</html>
