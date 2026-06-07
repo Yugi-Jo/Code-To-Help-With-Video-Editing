@@ -49,12 +49,12 @@
 
     <header>
         <h1>🎬 Vibe-Code: AI Storyboard Studio</h1>
-        <div class="sub">Unified Routing Model Layer Serverless Pipeline</div>
+        <div class="sub">Free Serverless Token-Based Script Inferences</div>
     </header>
 
     <div class="config-box">
         <div>
-            <label>🔑 Hugging Face User Access Token (Fine-Grained Read)</label>
+            <label>🔑 Hugging Face User Access Token (Read Scope Allowed)</label>
             <input type="text" id="hfToken" placeholder="hf_xxxxxxxxxxxxxxxxxxxxxxxxxx">
         </div>
         <div>
@@ -71,7 +71,7 @@
         <div class="panel-left">
             <label>📜 Paste Your Script</label>
             <textarea id="scriptInput" placeholder="Paste your narrative sequence or video voiceover script directly here..."></textarea>
-            <button id="generateBtn">⚡ Run Live Qwen Matrix Inference</button>
+            <button id="generateBtn">⚡ Run Live Free-Tier Inference</button>
         </div>
 
         <div>
@@ -80,7 +80,7 @@
                 <button class="copy-btn" id="copyMarkdownBtn">Copy Board Markdown</button>
             </div>
             <div id="outputContainer">
-                Enter your token and script, then execute the interface matrix to stream cards...
+                Enter your read token and script data container to execute local browser rendering rules...
             </div>
         </div>
     </div>
@@ -107,25 +107,32 @@
             generateBtn.disabled = true;
             outputEl.innerHTML = `
                 <div class="status-msg">
-                    <div>⚙️ Pinging Unified Hugging Face Inference Router...</div>
-                    <div class="status-sub">Routing to Qwen2.5-72B-Instruct v1 Engine Core. Processing...</div>
+                    <div>⚙️ Pinging Free Serverless Hub Endpoint Container...</div>
+                    <div class="status-sub">Querying Qwen2.5-7B-Instruct via standard local POST parameters...</div>
                 </div>`;
 
-            const systemPrompt = `You are a video production automation backend. Analyze the script and output a JSON array of 3-4 storyboard objects tailored to workflow intensity: ${tierSelect}.
-You must respond with ONLY a valid raw JSON array. Do not write markdown blocks, do not explain anything, do not include backticks (\`\`\`).
+            // Explicitly engineering raw inputs to avoid wrapper chat logic issues
+            const promptInput = `<|im_start|>system
+You are a script processing service. Convert the user's video script into a structured JSON block array matching this intensity profile: ${tierSelect}. Output exactly 3 to 4 array item entities. You must return only valid, clean JSON string data. Do not use markdown syntax, backticks (\`\`\`), or prose wrappers.
 
-Replicate this exact format structural layout:
+Replicate this formatting standard strictly:
 [
   {
     "title": "💥 Scene Action Sequence",
     "framing": "Wide Angle // Kinetic Motion Tracking",
-    "task": "Extract target reference files matching script context.",
-    "duration": "40 Mins"
+    "task": "Extract target reference assets and audio sync blocks.",
+    "duration": "45 Mins"
   }
-]`;
+]
+<|im_end|>
+<|im_start|>user
+Script text sequence: ${scriptInput}
+<|im_end|>
+<|im_start|>assistant
+[`;
 
-            // Canonical endpoint schema for serverless model routing
-            const targetModelUrl = "https://router.huggingface.co/hf-inference/v1/chat/completions";
+            // Using the correct classical Serverless endpoint address line
+            const targetModelUrl = "https://api-inference.huggingface.co/models/Qwen/Qwen2.5-7B-Instruct";
 
             let attempts = 0;
             const maxAttempts = 3;
@@ -139,52 +146,55 @@ Replicate this exact format structural layout:
                             "Content-Type": "application/json"
                         },
                         body: JSON.stringify({
-                            model: "Qwen/Qwen2.5-72B-Instruct",
-                            messages: [
-                                { role: "system", content: systemPrompt },
-                                { role: "user", content: `Script Content: ${scriptInput}` }
-                            ],
-                            max_tokens: 1500,
-                            temperature: 0.2
+                            inputs: promptInput,
+                            parameters: {
+                                max_new_tokens: 1000,
+                                return_full_text: false,
+                                temperature: 0.1
+                            }
                         })
                     });
 
-                    // Manage Cold Starts automatically
+                    // Serverless Layer 503 Auto-Recovery handler
                     if (response.status === 503) {
                         attempts++;
                         outputEl.innerHTML = `
                             <div class="status-msg">
-                                <div>⏳ Target Model cluster is warming up (Attempt ${attempts}/${maxAttempts})...</div>
-                                <div class="status-sub">Loading weights into system GPU memory. Retrying in 6 seconds...</div>
+                                <div>⏳ Hugging Face is loading the model on demand (Attempt ${attempts}/${maxAttempts})...</div>
+                                <div class="status-sub">Allocating target memory weights. Retrying in 8 seconds...</div>
                             </div>`;
-                        await new Promise(resolve => setTimeout(resolve, 6000));
+                        await new Promise(resolve => setTimeout(resolve, 8000));
                         continue; 
                     }
 
                     if (!response.ok) {
                         const errData = await response.json().catch(() => ({}));
-                        throw new Error(errData.error?.message || errData.error || `HTTP Network Status Exception: ${response.status}`);
+                        throw new Error(errData.error || `HTTP Pipeline Status Flag Exception: ${response.status}`);
                     }
 
                     const data = await response.json();
-                    let rawAIString = data.choices?.[0]?.message?.content;
+                    let rawAIString = Array.isArray(data) ? data[0]?.generated_text : data.generated_text;
 
-                    if (!rawAIString) throw new Error("The API responded successfully but left the data frame message payload empty.");
+                    if (!rawAIString) throw new Error("The endpoint execution completed but left the returned response buffer blank.");
+
+                    // Force array restoration because we passed the opening brace block to help the prompt align
+                    if (!rawAIString.trim().startsWith('[')) {
+                        rawAIString = '[' + rawAIString;
+                    }
 
                     const cleanedBlueprint = tryParseAIResponse(rawAIString);
                     renderStoryboardUI(cleanedBlueprint, scriptInput);
                     return; 
 
                 } catch (err) {
-                    console.error("Pipeline Exception Intercepted:", err);
+                    console.error("Pipeline Breakdown:", err);
                     outputEl.innerHTML = `
                         <div style="color:#f87171; padding:20px; border:1px dashed #f87171; border-radius:12px; background: rgba(248,113,113,0.05); line-height: 1.6;">
-                            ❌ Connection Exception: ${err.message}<br><br>
+                            ❌ Execution Exception: ${err.message}<br><br>
                             <span style="color:#9ca3af; font-size:12px; display:block;">
-                                <strong>Resolution Verification steps:</strong><br>
-                                1. Open your browser console (F12) to inspect the precise error payload rules.<br>
-                                2. Confirm your fine-grained token has <strong>"Make calls to the serverless Inference API"</strong> enabled under repository parameters.<br>
-                                3. Ensure browser shields or extensions are not intercepting outgoing fetch tracking strings.
+                                <strong>Next Action Steps:</strong><br>
+                                1. Ensure your token contains basic <strong>Read</strong> visibility permissions.<br>
+                                2. If errors continue, verify your network access is not blocking un-proxied browser fetch targets out of <code>api-inference.huggingface.co</code>.
                             </span>
                         </div>`;
                     break;
@@ -206,7 +216,7 @@ Replicate this exact format structural layout:
                 if (startIdx !== -1 && endIdx !== -1 && endIdx > startIdx) {
                     return JSON.parse(sanitized.substring(startIdx, endIdx + 1));
                 }
-                throw new Error("Data parsing exception. The AI model output conversational formatting data text blocks instead of arrays.");
+                throw new Error("JSON payload processing structural error. The model output code blocks instead of data arrays.");
             }
         }
 
@@ -217,7 +227,7 @@ Replicate this exact format structural layout:
             
             const boardContainer = document.createElement('div');
             boardContainer.className = "storyboard-grid";
-            const genericVector = '<svg viewBox="0 0 160 90" style="width:100%;height:100%;opacity:0.4;"><rect width="160" height="90" fill="none"/><line x1="10" y1="45" x2="150" y2="45" stroke="#374151" stroke-width="0.75" stroke-dasharray="4 4"/><text x="44" y="49" fill="#a855f7" font-size="6" font-family="monospace">[QWEN VECTOR LENS]</text></svg>';
+            const genericVector = '<svg viewBox="0 0 160 90" style="width:100%;height:100%;opacity:0.4;"><rect width="160" height="90" fill="none"/><line x1="10" y1="45" x2="150" y2="45" stroke="#374151" stroke-width="0.75" stroke-dasharray="4 4"/><text x="44" y="49" fill="#a855f7" font-size="6" font-family="monospace">[SERVERLESS CORE]</text></svg>';
 
             let textSegments = baselineScript.split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 5);
 
@@ -236,34 +246,4 @@ Replicate this exact format structural layout:
                     </div>
                     <div class="meta-bar">
                         <div class="meta-title">${item.title || 'Scene Segment'}</div>
-                        <div class="meta-framing">🎬 ${item.framing || 'Standard Composition'}</div>
-                    </div>
-                    <div class="card-content">
-                        <p class="script-quote">"${associatedQuote}"</p>
-                        <div class="task-row">
-                            <input type="checkbox" class="task-check">
-                            <p class="task-text">${item.task || 'Process layout components.'}</p>
-                        </div>
-                    </div>`;
-                boardContainer.appendChild(panelCard);
-            });
-            outputEl.appendChild(boardContainer);
-            window.currentBlueprint = blueprint;
-            document.getElementById('generateBtn').disabled = false;
-        }
-
-        function copyMarkdown() {
-            if (!window.currentBlueprint) return alert("Generate a storyboard dataset first!");
-            let md = "# 🎬 Your AI Production Storyboard Guide\n\n";
-            window.currentBlueprint.forEach((item, i) => {
-                md += `## Panel ${i+1}: ${item.title}\n`;
-                md += `- **Framing Layout**: ${item.framing}\n`;
-                md += `- **Time Allocation**: ${item.duration}\n`;
-                md += `- [ ] **Task**: ${item.task}\n\n---\n\n`;
-            });
-            navigator.clipboard.writeText(md);
-            alert("Copied to clipboard!");
-        }
-    </script>
-</body>
-</html>
+                        <div class="meta-framing">🎬 ${item.framing ||
