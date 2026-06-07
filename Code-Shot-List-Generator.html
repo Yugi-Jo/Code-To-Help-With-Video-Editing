@@ -45,8 +45,8 @@
     </div>
 
     <script type="module">
-        // Embedded free working key for the high-power Llama 3 production model
-        const BACKEND_KEY = "gsk_yV" + "P15U8D7v" + "9E88oQ3Wp" + "fWGdyb3FY" + "mI2N0vGfD9Gj" + "nI5V8zH5j1B2X";
+        // Fully unmasked development key for your app configuration
+        const RAW_KEY = "gsk_X3H7K137W39X9vDqV8fUWGdyb3FYmI2N0vGfD9GjnI5V8zH5j1B2X";
 
         window.generateShotList = async function() {
             const scriptText = document.getElementById('scriptInput').value.trim();
@@ -61,8 +61,8 @@
 
             const prompt = `You are an expert video director. Analyze this video script and extract a detailed B-roll shot list.
             Identify moments where visual B-roll helps pacing or explains concepts. 
-            Return the output strictly as a valid JSON array of objects. Each object must have exactly two fields: "line" (the script text) and "shot" (the visual description). 
-            Do not include any markdown formatting, do not wrap it in \`\`\`json tags, just provide the raw JSON data.
+            Return the output strictly as a JSON object containing an array named "shots". Each shot object must have exactly two fields: "line" (the script text) and "shot" (the visual description).
+            Do not include any markdown formatting, do not wrap it in \`\`\`json tags, just provide the raw JSON data string.
 
             Script: "${scriptText}"`;
 
@@ -71,10 +71,10 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${BACKEND_KEY}`
+                        'Authorization': `Bearer ${RAW_KEY}`
                     },
                     body: JSON.stringify({
-                        model: 'llama3-70b-8192',
+                        model: 'llama-3.1-8b-instant',
                         messages: [
                             { role: 'user', content: prompt }
                         ],
@@ -90,16 +90,10 @@
                 }
 
                 let rawText = data.choices[0].message.content.trim();
-                
-                // Parse out the JSON object safely
                 const parsedJson = JSON.parse(rawText);
                 
-                // Handle different potential structural wrappers from the AI
-                const shots = parsedJson.shots || parsedJson.shot_list || (Array.isArray(parsedJson) ? parsedJson : Object.values(parsedJson)[0]);
-
-                if (!Array.isArray(shots)) {
-                    throw new Error("AI data returned an unexpected format. Try hitting generate again.");
-                }
+                // Extract array safe parameters
+                const shots = parsedJson.shots || parsedJson.shot_list || parsedJson;
 
                 renderShots(shots);
 
@@ -116,7 +110,14 @@
             const output = document.getElementById('outputContainer');
             output.innerHTML = "";
             
-            shots.forEach((item, index) => {
+            const shotsArray = Array.isArray(shots) ? shots : Object.values(shots)[0];
+
+            if (!Array.isArray(shotsArray)) {
+                output.innerHTML = "<span class='text-yellow-400'>Formatting anomaly. Please try hitting generate again.</span>";
+                return;
+            }
+
+            shotsArray.forEach((item, index) => {
                 const shotDiv = document.createElement('div');
                 shotDiv.className = "mb-4 pb-3 border-b border-gray-800 last:border-0";
                 shotDiv.innerHTML = `
@@ -129,7 +130,7 @@
                 output.appendChild(shotDiv);
             });
             
-            window.currentShots = shots;
+            window.currentShots = shotsArray;
         }
 
         window.copyMarkdown = function() {
