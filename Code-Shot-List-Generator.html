@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎬 Local AI Vibe-Code Shot List Generator</title>
+    <title>🎬 Cloud AI Shot List Generator</title>
     <script src="https://cdn.jsdelivr.net/npm/@unocss/runtime"></script>
     <style>
         body { background-color: #0b0f19; color: #f3f4f6; font-family: sans-serif; }
@@ -15,7 +15,7 @@
         <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
             🎬 Vibe-Code: Script to B-Roll
         </h1>
-        <p class="text-gray-400 mt-2">Pure Local AI Engine — Zero Server Connections, Zero Fetch Errors</p>
+        <p class="text-gray-400 mt-2">Premium Cloud AI — 0MB Device Storage Required</p>
     </header>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -24,7 +24,7 @@
             <label class="font-semibold text-gray-300 mb-2">📜 Paste Your Script</label>
             <textarea id="scriptInput" rows="12" placeholder="Paste your script here..." 
                       class="w-full h-full bg-gray-900 border border-gray-800 rounded-xl p-4 resize-none focus:outline-none focus:border-pink-500 shadow-inner text-gray-200"></textarea>
-            <button id="generateBtn" onclick="generateLocalAIShotList()" 
+            <button id="generateBtn" onclick="generateCloudAI()" 
                     class="mt-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-3 px-6 rounded-xl shadow-md hover:opacity-90 transition duration-200">
                 ⚡ Generate Shot List
             </button>
@@ -42,12 +42,7 @@
     </div>
 
     <script type="module">
-        // Import the web-native local AI pipeline execution kit
-        import { pipeline } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.1';
-
-        let localAiModel = null;
-
-        window.generateLocalAIShotList = async function() {
+        window.generateCloudAI = async function() {
             const scriptText = document.getElementById('scriptInput').value.trim();
             const output = document.getElementById('outputContainer');
 
@@ -56,48 +51,56 @@
                 return;
             }
 
-            output.innerHTML = "<span class='text-purple-400 animate-pulse'>Warming up the local AI engine... (First run downloads the 400MB model directly into your browser cache, please wait a moment!) 🧠</span>";
+            output.innerHTML = "<span class='text-purple-400 animate-pulse'>Cloud AI is dreaming up your visual layout... 🍳</span>";
+
+            // Breaking script by paragraphs to give the AI digestible chunks
+            const paragraphs = scriptText.split('\n\n').filter(p => p.trim().length > 10);
+            let shotCollection = [];
 
             try {
-                // Instantiating a smart text-generation framework directly inside the client workspace
-                if (!localAiModel) {
-                    localAiModel = await pipeline('text2text-generation', 'Xenova/LaMini-Flan-T5-783M');
-                }
-
-                output.innerHTML = "<span class='text-pink-400 animate-pulse'>Local AI is reading your script metaphors... 🎬</span>";
-
-                // Break script down by paragraphs for broad structural analysis
-                const paragraphs = scriptText.split('\n\n').filter(p => p.trim().length > 10);
-                let compiledShots = [];
-
                 for (let block of paragraphs) {
                     block = block.trim();
                     
-                    // We prompt the local network to output a clean B-roll layout concept
-                    const instructionPrompt = `Task: You are a creative movie director. Read this video script line: "${block}". Describe a visually interesting, detailed B-roll footage shot description that matches this exact scene vibe. Output only the camera shot description.`;
-                    
-                    const response = await localAiModel(instructionPrompt, {
-                        max_new_tokens: 60,
-                        temperature: 0.6,
+                    const prompt = `You are an expert video director. Describe one highly creative, cinematic B-roll camera shot to visually match this script segment: "${block}". Provide ONLY the shot description, nothing else.`;
+
+                    // Using an open proxy to smash through browser CORS limits, routing to a public text-model
+                    const targetUrl = 'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2';
+                    const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+
+                    const response = await fetch(proxyUrl + targetUrl, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({ inputs: prompt })
                     });
 
-                    let aiShotResult = response[0].generated_text;
+                    const data = await response.json();
                     
-                    // Clean up any weird repeating text prefixes the model might output
-                    aiShotResult = aiShotResult.replace(/^Shot description:|^B-roll:|^Visual:/i, '').trim();
+                    if (!response.ok) {
+                        // If the public proxy demo needs a quick activation click
+                        if (response.status === 403) {
+                            throw new Error("Proxy Activation Required. Please visit cors-anywhere.herokuapp.com/corsdemo and click 'Request temporary access', then return here and try again!");
+                        }
+                        throw new Error(data.error || "Server connection hiccup.");
+                    }
 
-                    compiledShots.push({
-                        line: block.substring(0, 75) + "...",
-                        shot: aiShotResult || "A-Roll close up highlighting the dialog progression."
+                    let rawAiText = data[0].generated_text;
+                    let cleanShot = rawAiText.replace(prompt, "").trim().split('\n')[0];
+
+                    shotCollection.push({
+                        line: block.substring(0, 60) + "...",
+                        shot: cleanShot || "Dynamic B-Roll tracking shot capturing the tone of the narrative."
                     });
                 }
 
-                renderShots(compiledShots);
+                renderShots(shotCollection);
 
             } catch (error) {
                 console.error(error);
                 output.innerHTML = `
-                    <span class='text-red-400 font-semibold'>Local Execution Error:</span><br>
+                    <span class='text-red-400 font-semibold'>Pipeline Notice:</span><br>
                     <span class='text-gray-400 block mt-2 text-xs bg-black p-2 rounded border border-gray-800 font-mono'>${error.message}</span>
                 `;
             }
