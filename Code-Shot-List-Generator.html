@@ -15,7 +15,7 @@
         <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
             🎬 Vibe-Code: Script to B-Roll
         </h1>
-        <p class="text-gray-400 mt-2">Premium Cloud AI — 0MB Device Storage Required</p>
+        <p class="text-gray-400 mt-2">Premium Cloud AI — No Keys, No Proxies, 0MB Device Storage</p>
     </header>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -24,7 +24,7 @@
             <label class="font-semibold text-gray-300 mb-2">📜 Paste Your Script</label>
             <textarea id="scriptInput" rows="12" placeholder="Paste your script here..." 
                       class="w-full h-full bg-gray-900 border border-gray-800 rounded-xl p-4 resize-none focus:outline-none focus:border-pink-500 shadow-inner text-gray-200"></textarea>
-            <button id="generateBtn" onclick="generateCloudAI()" 
+            <button id="generateBtn" onclick="generateShotList()" 
                     class="mt-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-3 px-6 rounded-xl shadow-md hover:opacity-90 transition duration-200">
                 ⚡ Generate Shot List
             </button>
@@ -42,7 +42,7 @@
     </div>
 
     <script type="module">
-        window.generateCloudAI = async function() {
+        window.generateShotList = async function() {
             const scriptText = document.getElementById('scriptInput').value.trim();
             const output = document.getElementById('outputContainer');
 
@@ -51,56 +51,72 @@
                 return;
             }
 
-            output.innerHTML = "<span class='text-purple-400 animate-pulse'>Cloud AI is dreaming up your visual layout... 🍳</span>";
+            output.innerHTML = "<span class='text-purple-400 animate-pulse'>Cloud AI is analyzing your script context... 🍳</span>";
 
-            // Breaking script by paragraphs to give the AI digestible chunks
-            const paragraphs = scriptText.split('\n\n').filter(p => p.trim().length > 10);
-            let shotCollection = [];
+            const prompt = `You are an expert video director. Analyze this video script and extract a detailed B-roll shot list.
+            Identify moments where visual B-roll helps pacing or explains concepts. 
+            Return the output strictly as a valid JSON array of objects. Each object must have exactly two fields: "line" (the script text) and "shot" (the visual description). 
+            Do not include any markdown formatting, do not wrap it in \`\`\`json tags, just provide raw JSON string array text.
+
+            Script: "${scriptText}"`;
 
             try {
-                for (let block of paragraphs) {
-                    block = block.trim();
-                    
-                    const prompt = `You are an expert video director. Describe one highly creative, cinematic B-roll camera shot to visually match this script segment: "${block}". Provide ONLY the shot description, nothing else.`;
+                // Initialize token handshake with the unauthenticated cloud node
+                const initResponse = await fetch('https://ai.duckduckgo.com/v1/status', {
+                    headers: { 'x-vqd-accept': '1' }
+                });
+                const vqdToken = initResponse.headers.get('x-vqd-token');
 
-                    // Using an open proxy to smash through browser CORS limits, routing to a public text-model
-                    const targetUrl = 'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2';
-                    const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-
-                    const response = await fetch(proxyUrl + targetUrl, {
-                        method: 'POST',
-                        headers: { 
-                            'Content-Type': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest'
-                        },
-                        body: JSON.stringify({ inputs: prompt })
-                    });
-
-                    const data = await response.json();
-                    
-                    if (!response.ok) {
-                        // If the public proxy demo needs a quick activation click
-                        if (response.status === 403) {
-                            throw new Error("Proxy Activation Required. Please visit cors-anywhere.herokuapp.com/corsdemo and click 'Request temporary access', then return here and try again!");
-                        }
-                        throw new Error(data.error || "Server connection hiccup.");
-                    }
-
-                    let rawAiText = data[0].generated_text;
-                    let cleanShot = rawAiText.replace(prompt, "").trim().split('\n')[0];
-
-                    shotCollection.push({
-                        line: block.substring(0, 60) + "...",
-                        shot: cleanShot || "Dynamic B-Roll tracking shot capturing the tone of the narrative."
-                    });
+                if (!vqdToken) {
+                    throw new Error("Handshake token initialization failed. Please try again.");
                 }
 
-                renderShots(shotCollection);
+                // Call the high-power cloud network directly using the standard chat pipeline
+                const chatResponse = await fetch('https://ai.duckduckgo.com/v1/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-vqd-token': vqdToken
+                    },
+                    body: JSON.stringify({
+                        model: 'meta-llama/Llama-3-70b-instruct',
+                        messages: [{ role: 'user', content: prompt }]
+                    })
+                });
+
+                const streamText = await chatResponse.text();
+                
+                // DuckDuckGo stream data parsing engine to combine text chunks cleanly
+                const lines = streamText.split('\n');
+                let rawAiText = '';
+                
+                for (const line of lines) {
+                    if (line.startsWith('data:')) {
+                        const dataStr = line.slice(5).trim();
+                        if (dataStr === '[DONE]') break;
+                        try {
+                            const parsedChunk = JSON.parse(dataStr);
+                            if (parsedChunk.message) {
+                                rawAiText += parsedChunk.message;
+                            }
+                        } catch (e) {}
+                    }
+                }
+
+                let cleanJsonString = rawAiText.trim();
+                
+                // Clean up any extra markdown notation code blocks the AI leaves behind
+                if (cleanJsonString.includes("```")) {
+                    cleanJsonString = cleanJsonString.replace(/```json|```/g, "").trim();
+                }
+
+                const shots = JSON.parse(cleanJsonString);
+                renderShots(shots);
 
             } catch (error) {
                 console.error(error);
                 output.innerHTML = `
-                    <span class='text-red-400 font-semibold'>Pipeline Notice:</span><br>
+                    <span class='text-red-400 font-semibold'>AI Pipeline Error:</span><br>
                     <span class='text-gray-400 block mt-2 text-xs bg-black p-2 rounded border border-gray-800 font-mono'>${error.message}</span>
                 `;
             }
@@ -110,27 +126,34 @@
             const output = document.getElementById('outputContainer');
             output.innerHTML = "";
             
-            shots.forEach((item, index) => {
+            const shotsArray = Array.isArray(shots) ? shots : Object.values(shots)[0];
+
+            if (!Array.isArray(shotsArray)) {
+                output.innerHTML = "<span class='text-yellow-400'>Formatting anomaly from cloud. Please click generate again.</span>";
+                return;
+            }
+
+            shotsArray.forEach((item, index) => {
                 const shotDiv = document.createElement('div');
                 shotDiv.className = "mb-4 pb-3 border-b border-gray-800 last:border-0";
                 shotDiv.innerHTML = `
-                    <p class="text-xs text-gray-500 italic mb-1">Focus Context: "${item.line}"</p>
+                    <p class="text-xs text-gray-500 italic mb-1">Focus Segment: "${item.line || 'Script Piece'}"</p>
                     <div class="flex items-start gap-2">
                         <input type="checkbox" class="mt-1 accent-purple-500">
-                        <span class="text-gray-200 font-medium"><strong>Shot ${index+1}:</strong> ${item.shot}</span>
+                        <span class="text-gray-200 font-medium"><strong>Shot ${index+1}:</strong> ${item.shot || item.visual}</span>
                     </div>
                 `;
                 output.appendChild(shotDiv);
             });
             
-            window.currentShots = shots;
+            window.currentShots = shotsArray;
         }
 
         window.copyMarkdown = function() {
             if (!window.currentShots) return alert("Nothing to copy yet!");
             let md = "## 🎬 Shot List\n\n";
             window.currentShots.forEach((item, i) => {
-                md += `- [ ] **Shot ${i+1}** (Line: "${item.line}"): ${item.shot}\n`;
+                md += `- [ ] **Shot ${i+1}** (Line: "${item.line || 'Script'}"): ${item.shot || item.visual}\n`;
             });
             navigator.clipboard.writeText(md);
             alert("Markdown checklist copied to clipboard!");
