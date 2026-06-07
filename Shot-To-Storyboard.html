@@ -6,106 +6,105 @@
     <title>🎬 AI Storyboard Studio</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: #0b0f19; color: #f3f4f6; font-family: system-ui, -apple-system, sans-serif; padding: 24px; max-width: 1200px; margin: 0 auto; }
-        header { text-align: center; margin-bottom: 32px; }
-        h1 { color: #a855f7; font-size: 2rem; margin-bottom: 8px; }
-        p.sub { color: #9ca3af; font-size: 14px; }
-        .config-box { background: #111827; padding: 16px; border-radius: 8px; margin-bottom: 24px; display: flex; gap: 16px; flex-wrap: wrap; border: 1px solid #1f2937; }
-        .config-box div { flex: 1; min-width: 250px; }
-        label { display: block; font-size: 11px; color: #a855f7; font-weight: bold; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
-        input, select, textarea { width: 100%; background: #030712; border: 1px solid #374151; color: white; padding: 12px; border-radius: 6px; font-size: 14px; outline: none; }
-        input:focus, select:focus, textarea:focus { border-color: #a855f7; }
-        textarea { height: 220px; margin-bottom: 16px; resize: none; }
-        button { background: #a855f7; color: white; border: none; padding: 14px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; font-size: 14px; transition: opacity 0.2s; }
+        body { background-color: #0b0f19; color: #f3f4f6; font-family: system-ui, sans-serif; padding: 30px; max-width: 1100px; margin: 0 auto; }
+        header { text-align: center; margin-bottom: 30px; }
+        h1 { color: #a855f7; margin-bottom: 5px; }
+        .config-box { background: #111827; padding: 20px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #1f2937; }
+        label { display: block; font-size: 12px; color: #a855f7; font-weight: bold; margin-bottom: 8px; text-transform: uppercase; }
+        input, textarea { width: 100%; background: #030712; border: 1px solid #374151; color: white; padding: 12px; border-radius: 6px; font-size: 14px; margin-bottom: 15px; }
+        textarea { height: 180px; resize: none; }
+        button { background: #a855f7; color: white; border: none; padding: 14px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; font-size: 14px; }
         button:hover { opacity: 0.9; }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
-        .layout-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
-        #outputContainer { background: #111827; padding: 20px; border-radius: 8px; min-height: 290px; border: 1px solid #1f2937; color: #9ca3af; font-size: 14px; }
-        .storyboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+        #outputContainer { background: #111827; padding: 20px; border-radius: 8px; min-height: 150px; border: 1px solid #1f2937; color: #9ca3af; margin-top: 10px; }
+        .storyboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
         .panel-card { background: #030712; border: 1px solid #1f2937; border-radius: 8px; padding: 16px; }
-        .panel-title { color: #c084fc; font-weight: bold; margin-bottom: 4px; font-size: 15px; }
-        .panel-meta { font-size: 11px; color: #9ca3af; margin-bottom: 12px; font-family: monospace; }
-        .panel-task { font-size: 13px; color: #e5e7eb; line-height: 1.5; background: #111827; padding: 8px; border-radius: 4px; border: 1px solid #1f2937; }
-        .status-msg { text-align: center; color: #a855f7; padding: 60px 20px; font-weight: bold; }
-        .status-sub { font-size: 12px; color: #6b7280; font-weight: normal; margin-top: 4px; }
+        .panel-title { color: #c084fc; font-weight: bold; margin-bottom: 5px; }
+        .status-msg { text-align: center; color: #a855f7; padding: 40px; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <header>
         <h1>🎬 AI Storyboard Studio</h1>
-        <p class="sub">Free Public Serverless Access Node Vector</p>
+        <p style="color: #9ca3af;">Serverless API Workstation</p>
     </header>
 
     <div class="config-box">
-        <div>
-            <label>🔑 Hugging Face Access Token</label>
-            <input type="text" id="hfToken" placeholder="hf_xxxxxxxxxxxxxxxxxxxxxxxxxx">
-        </div>
-        <div>
-            <label>📅 Workflow Tier</label>
-            <select id="productionTier">
-                <option value="tier1" selected>🚀 Speed Run (1-2 Days)</option>
-                <option value="tier2">⏳ Steady Grind (3-5 Days)</option>
-            </select>
-        </div>
+        <label>🔑 Hugging Face Access Token</label>
+        <input type="text" id="hfToken" placeholder="hf_xxxxxxxxxxxxxxxxxxxxxxxxxx">
+        
+        <label>📜 Video Script Input</label>
+        <textarea id="scriptInput" placeholder="Paste your script text blocks here..."></textarea>
+        
+        <button id="generateBtn" onclick="runInference()">⚡ Generate Storyboard</button>
     </div>
 
-    <div class="layout-grid">
-        <div>
-            <label>📜 Script Input Selector</label>
-            <textarea id="scriptInput" placeholder="Paste your voiceover script or scene descriptions here..."></textarea>
-            <button id="generateBtn" onclick="generateStoryboardBlueprint()">⚡ Run Live Inference</button>
-        </div>
-        <div>
-            <label>📋 Rendered Production Output</label>
-            <div id="outputContainer">Your generated layout cards will process here once inference is active...</div>
-        </div>
-    </div>
+    <label>📋 Rendered Studio Panels</label>
+    <div id="outputContainer">Your generated cards will output here...</div>
 
     <script>
-        async function generateStoryboardBlueprint() {
-            const tokenInput = document.getElementById('hfToken').value.trim();
-            const scriptInput = document.getElementById('scriptInput').value.trim();
-            const tierSelect = document.getElementById('productionTier').value;
-            const outputEl = document.getElementById('outputContainer');
-            const generateBtn = document.getElementById('generateBtn');
+        async function runInference() {
+            const token = document.getElementById('hfToken').value.trim();
+            const script = document.getElementById('scriptInput').value.trim();
+            const output = document.getElementById('outputContainer');
+            const btn = document.getElementById('generateBtn');
 
-            if (!tokenInput || !scriptInput) {
-                return alert("Please fill out both your token and script input fields!");
-            }
+            if (!token || !script) return alert("Please fill in both fields!");
 
-            generateBtn.disabled = true;
-            outputEl.innerHTML = `
-                <div class="status-msg">
-                    <div>⏳ Querying Qwen Core Infrastructure...</div>
-                    <div class="status-sub">Transmitting serverless text generation tokens...</div>
-                </div>`;
+            btn.disabled = true;
+            output.innerHTML = `<div class="status-msg">⏳ Connecting to serverless clusters...</div>`;
 
-            const systemPrompt = `You are a script converter. Convert the script into a JSON array matching this tier: ${tierSelect}. Output exactly 3 items. Return ONLY a valid raw JSON array. No markdown, no backticks.
-Format Example Layout: [{"title": "Scene Name", "framing": "Camera Style", "task": "Production task description", "duration": "30 Mins"}]`;
-
-            // FIX: Safely construct tokens using clean array joins to keep the browser compiler happy
-            const startToken = ['<', '|im_start|', '>'].join('');
-            const endToken = ['<', '|im_end|', '>'].join('');
-
-            const promptInput = `${startToken}system\n${systemPrompt}${endToken}\n${startToken}user\nScript: ${scriptInput}${endToken}\n${startToken}assistant\n`;
+            const systemInstruction = "You are an automated storyboard designer. Convert the text into a JSON array containing exactly 3 panel steps. Do not use markdown wrappers or backticks. Return the raw array string directly.";
+            const structuredPrompt = `<|im_start|>system\n${systemInstruction}<|im_end|>\n<|im_start|>user\nScript: ${script}<|im_end|>\n<|im_start|>assistant\n`;
 
             try {
-                const response = await fetch("https://api-inference.huggingface.co/models/Qwen/Qwen2.5-7B-Instruct", {
+                const res = await fetch("https://api-inference.huggingface.co/models/Qwen/Qwen2.5-7B-Instruct", {
                     method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${tokenInput}`,
-                        "Content-Type": "application/json"
-                    },
+                    headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        inputs: promptInput,
-                        parameters: { max_new_tokens: 800, return_full_text: false, temperature: 0.1 }
+                        inputs: structuredPrompt,
+                        parameters: { max_new_tokens: 600, return_full_text: false, temperature: 0.2 }
                     })
                 });
 
-                if (response.status === 503) {
-                    outputEl.innerHTML = `
-                        <div class="status-msg" style="color: #fbbf24;">
-                            <div>⏳ Model cluster is spinning up on demand...</div>
-                            <div class="status-sub">Weights are currently loading into system RAM. Please try clicking the run button again in 10 seconds!</div>
+                if (res.status === 503) {
+                    output.innerHTML = `<div class="status-msg">⏳ Model server is booting up. Please try again in 10 seconds!</div>`;
+                    btn.disabled = false;
+                    return;
+                }
+
+                if (!res.ok) throw new Error(`HTTP Error Status: ${res.status}`);
+
+                const outData = await res.json();
+                let text = Array.isArray(outData) ? outData[0]?.generated_text : outData.generated_text;
+
+                const startIdx = text.indexOf('[');
+                const endIdx = text.lastIndexOf(']');
+                if (startIdx === -1 || endIdx === -1) throw new Error("JSON processing alignment mismatch.");
+
+                const cleanArray = JSON.parse(text.substring(startIdx, endIdx + 1));
+                
+                output.innerHTML = "";
+                const grid = document.createElement('div');
+                grid.className = "storyboard-grid";
+
+                cleanArray.forEach((item, index) => {
+                    const card = document.createElement('div');
+                    card.className = "panel-card";
+                    card.innerHTML = `
+                        <div class="panel-title">🎬 Card ${index + 1}: ${item.title || 'Scene Sequence'}</div>
+                        <p style="font-size:13px; color:#9ca3af; margin-bottom:8px;">📐 ${item.framing || 'Wide Shot'}</p>
+                        <p style="font-size:13px; color:#e5e7eb;">⚙️ ${item.task || 'Process assets.'}</p>
+                    `;
+                    grid.appendChild(card);
+                });
+                output.appendChild(grid);
+
+            } catch (err) {
+                output.innerHTML = `<div style="color:#f87171; padding:15px; border:1px dashed #f87171; border-radius:6px;">❌ Output Error: ${err.message}</div>`;
+            }
+            btn.disabled = false;
+        }
+    </script>
+</body>
+</html>
