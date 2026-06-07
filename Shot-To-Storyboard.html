@@ -54,50 +54,51 @@
             if (!token || !script) return alert("Please fill in both fields!");
 
             btn.disabled = true;
-            output.innerHTML = `<div class="status-msg">⏳ Connecting via Fine-Grained Provider Router Matrix...</div>`;
+            output.innerHTML = `<div class="status-msg">⏳ Pinging Serverless Model Pipeline...</div>`;
 
-            const systemInstruction = `Convert the script into a structured JSON array containing exactly 3 timeline items. Each object must use exactly these keys: "title", "framing", "task". Do not include any markdown syntax wrappers, explanatory text, or backticks (\`\`\`). Return ONLY raw JSON text.`;
+            // Clean direct instruction schema for direct text generation routing
+            const cleanPrompt = `You are an expert storyboard visual planner. Convert the script below into a raw JSON array matching this strict schema template format with exactly 3 panel steps. Do not use any markdown boxes, do not write backticks, do not write explanations. Return only valid array text.
+
+Expected schema:
+[{"title": "Scene Name", "framing": "Shot Type", "task": "Production action detail"}]
+
+Script data:
+${script}`;
 
             try {
-                // Switched to the modern endpoint schema compatible with provider token logic
-                const res = await fetch("https://api-inference.huggingface.co/v1/chat/completions", {
+                // Reverted back to the native model execution route that matches Fine-Grained Provider scopes
+                const res = await fetch("https://api-inference.huggingface.co/models/Qwen/Qwen2.5-7B-Instruct", {
                     method: "POST",
                     headers: { 
                         "Authorization": `Bearer ${token}`, 
                         "Content-Type": "application/json" 
                     },
                     body: JSON.stringify({
-                        model: "Qwen/Qwen2.5-7B-Instruct",
-                        messages: [
-                            { role: "system", content: systemInstruction },
-                            { role: "user", content: script }
-                        ],
-                        max_tokens: 600,
-                        temperature: 0.1
+                        inputs: cleanPrompt,
+                        parameters: { max_new_tokens: 600, return_full_text: false, temperature: 0.1 }
                     })
                 });
 
-                // Automated on-demand server cluster warmup monitor
                 if (res.status === 503) {
-                    output.innerHTML = `<div class="status-msg">⏳ Model server is currently waking up. Please click generate again in 8 seconds!</div>`;
+                    output.innerHTML = `<div class="status-msg">⏳ Model cluster is currently warming up on server nodes. Please click run again in 10 seconds!</div>`;
                     btn.disabled = false;
                     return;
                 }
 
                 if (!res.ok) {
                     const errorDetails = await res.json().catch(() => ({}));
-                    throw new Error(errorDetails.error?.message || errorDetails.error || `HTTP Network Status Code: ${res.status}`);
+                    throw new Error(errorDetails.error || `HTTP Error Code: ${res.status}`);
                 }
 
                 const outData = await res.json();
-                let text = outData.choices?.[0]?.message?.content;
+                let text = Array.isArray(outData) ? outData[0]?.generated_text : outData.generated_text;
 
-                if (!text) throw new Error("The endpoint completed but left the text data frame wrapper empty.");
+                if (!text) throw new Error("The pipeline executed successfully but returned a blank payload stream.");
 
-                // Extraction parsing block
+                // Safe bracket alignment isolation parser
                 const startIdx = text.indexOf('[');
                 const endIdx = text.lastIndexOf(']');
-                if (startIdx === -1 || endIdx === -1) throw new Error("The model failed to format the response as a clean JSON array.");
+                if (startIdx === -1 || endIdx === -1) throw new Error("The model did not format response as a clean JSON data array.");
 
                 const cleanArray = JSON.parse(text.substring(startIdx, endIdx + 1));
                 
@@ -109,9 +110,9 @@
                     const card = document.createElement('div');
                     card.className = "panel-card";
                     card.innerHTML = `
-                        <div class="panel-title">🎬 Card ${index + 1}: ${item.title || 'Scene Sequence'}</div>
-                        <p style="font-size:13px; color:#9ca3af; margin-bottom:8px;">📐 Framing: ${item.framing || 'Wide Shot'}</p>
-                        <p style="font-size:13px; color:#e5e7eb;">⚙️ Task: ${item.task || 'Process assets.'}</p>
+                        <div class="panel-title">🎬 Card ${index + 1}: ${item.title || 'Scene Step'}</div>
+                        <p style="font-size:13px; color:#9ca3af; margin-bottom:8px;">📐 Framing: ${item.framing || 'Standard composition'}</p>
+                        <p style="font-size:13px; color:#e5e7eb;">⚙️ Task: ${item.task || 'Process production files.'}</p>
                     `;
                     grid.appendChild(card);
                 });
@@ -122,7 +123,7 @@
                     <div style="color:#f87171; padding:15px; border:1px dashed #f87171; border-radius:6px; background: rgba(248,113,113,0.02); line-height: 1.5;">
                         ❌ Network Exception: ${err.message}<br><br>
                         <span style="color:#9ca3af; font-size:12px;">
-                            💡 Note: If errors continue, make sure to temporarily pause your browser's adblock shields (like Brave Shields or uBlock) on this page to prevent local connection blocking.
+                            💡 <strong>Quick Fix:</strong> If you are testing this file directly from your computer folders, look at your address bar. If it says <code>file:///</code>, modern web security rules can block out-going API calls. To bypass this restriction instantly, pause your web browser's adblock shields (like Brave Shields or uBlock Origin) on this tab.
                         </span>
                     </div>`;
             }
