@@ -9,14 +9,32 @@
         body { background-color: #0b0f19; color: #f3f4f6; font-family: sans-serif; }
     </style>
 </head>
-<body class="p-6 max-w-4xl mx-auto">
+<body class="p-6 max-w-5xl mx-auto">
 
     <header class="mb-8 text-center">
         <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
             🎬 Vibe-Code: Script to B-Roll
         </h1>
-        <p class="text-gray-400 mt-2">Hybrid Smart Director Engine — Perfectly Balanced Pacing</p>
+        <p class="text-gray-400 mt-2">Dynamic Production Engine — Tailored to your time & workflow speed</p>
     </header>
+
+    <div class="bg-gray-900 border border-gray-800 p-4 rounded-xl mb-6 grid grid-cols-1 md:grid-cols-2 gap-4 shadow-lg">
+        <div>
+            <label class="block text-xs font-bold text-purple-400 uppercase tracking-wider mb-2">⏱️ Production Time Frame</label>
+            <select id="timeFrame" class="w-full bg-gray-950 border border-gray-700 rounded p-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500">
+                <option value="fast">Run & Gun (Under 2 hours - Simple, fast, no tripod setups)</option>
+                <option value="balanced" selected>Standard (1-2 Days - Good pacing, thoughtful setups)</option>
+                <option value="high_effort">Cinematic Masterpiece (Multi-day - Deep lighting, heavy camera moves)</option>
+            </select>
+        </div>
+        <div>
+            <label class="block text-xs font-bold text-pink-400 uppercase tracking-wider mb-2">🧠 Production Skill Level</label>
+            <select id="skillLevel" class="w-full bg-gray-950 border border-gray-700 rounded p-2 text-sm text-gray-200 focus:outline-none focus:border-pink-500">
+                <option value="beginner">Solo Beginner (Smartphone / Basic Camera, natural light, zero crew)</option>
+                <option value="advanced">Experienced / Pro (Advanced camera settings, multi-point lighting)</option>
+            </select>
+        </div>
+    </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         
@@ -24,168 +42,51 @@
             <label class="font-semibold text-gray-300 mb-2">📜 Paste Your Script</label>
             <textarea id="scriptInput" rows="12" placeholder="Paste your script here..." 
                       class="w-full h-full bg-gray-900 border border-gray-800 rounded-xl p-4 resize-none focus:outline-none focus:border-pink-500 shadow-inner text-gray-200"></textarea>
-            <button id="generateBtn" onclick="generateBalancedShots()" 
+            <button id="generateBtn" onclick="generateProductionShots()" 
                     class="mt-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-3 px-6 rounded-xl shadow-md hover:opacity-90 transition duration-200">
-                ⚡ Generate Shot List
+                ⚡ Generate Tailored Shot List
             </button>
         </div>
 
         <div class="flex flex-col">
             <div class="flex justify-between items-center mb-2">
-                <label class="font-semibold text-gray-300">📋 Shot List Checklist</label>
+                <label class="font-semibold text-gray-300">📋 Smart Shot List Checklist</label>
                 <button onclick="copyMarkdown()" class="text-xs text-purple-400 hover:underline">Copy Markdown</button>
             </div>
             <div id="outputContainer" class="bg-gray-900 border border-gray-800 rounded-xl p-4 h-96 overflow-y-auto shadow-inner text-gray-400 text-sm">
-                Your B-Roll suggestions will appear here...
+                Your customized, time-optimized B-Roll suggestions will appear here...
             </div>
         </div>
     </div>
 
     <script type="module">
-        // Advanced Cinematic Directing Matrix
-        const visualMatrix = [
+        // Dynamic Matrix mapping base concepts to complexity tiers
+        const productionMatrix = [
             {
                 triggers: ['robot', 'mecha', 'monster', 'action', 'explosion', 'flashy'],
-                shot: "A high-contrast, fast-cutting montage of vintage anime action. Think dynamic impact frames, flashing neon debris, and giant robotic silhouettes cutting through smoke."
+                fast: "Quick screen-recording/capture or extreme close-up pan over a robot image on your monitor or phone with a fast camera shake.",
+                balanced: "A high-contrast, fast-cutting montage of vintage anime action clips. Smooth editing cuts syncing up with the script pacing.",
+                high_effort: "A stylized macro track using a slider across a physical model kit with practical background smoke effects and flashing colored LED lights to simulate combat."
             },
             {
                 triggers: ['model kit', 'plastic', 'shelf', 'toy', 'figure', 'kid', 'childhood'],
-                shot: "A smooth, warm-toned macro tracking shot pulling focus across a shelf of meticulously detailed plastic model kits and retro collectibles, coated in soft overhead nostalgia lighting."
+                fast: "Simple eye-level handheld phone pan looking across your toy/model collection shelf under room lighting.",
+                balanced: "Macro tracking shot pulling focus smoothly from one figure to another, using a tripod or gimbal under soft overhead nostalgia lighting.",
+                high_effort: "A deep depth-of-field probe lens push through the collection space, utilizing a multi-point studio light setup and manual color grading to create an elite cinematic showcase."
             },
             {
                 triggers: ['perspective', 'changes', 'rewatch', 'week', 'differently', 'time'],
-                shot: "An extreme close-up of a tape deck engaging, or a stylized screen interface scrolling through old video files, symbolizing a shift in perspective over time."
+                fast: "A fast overhead point-of-view shot of your hands throwing an old notebook or media case down onto a desk.",
+                balanced: "A clean extreme close-up of a tape deck loading, or a stylized desktop interface cleanly scrolling through a library of retro video files.",
+                high_effort: "A complex match-cut transition shifting from a dirty old CRT television screen displaying the show to a modern 4K production editing monitor."
             },
             {
                 triggers: ['quiet', 'silence', 'elevator', 'isolation', 'empty', 'existential'],
-                shot: "A symmetrical, slow push-in wide shot of a completely empty, industrial concrete elevator shaft or a brutalist corridor, leaning heavily into a sense of profound isolation."
+                fast: "A simple static shot looking down at an empty corner of your room, framing a clean negative space.",
+                balanced: "A symmetrical, slow push-in wide shot of an empty corridor or architectural space, leaning heavily into clean geometry and still frames.",
+                high_effort: "A highly stylized, color-blocked composition of an empty structural element or architecture, using heavy shadows and dramatic low-key rim lighting to capture profound isolation."
             },
             {
                 triggers: ['cityscapes', 'clock', 'ticking', 'masterpiece'],
-                shot: "A beautifully graded time-lapse of a sprawling urban skyline at dusk, with the hands of a large train-station style clock ticking forward in slow motion."
-            },
-            {
-                triggers: ['broken', 'teenager', 'reflection', 'window', 'rain', 'melancholic'],
-                shot: "A cinematic, moody medium shot looking through a rain-slicked window glass. Neon city lights blur into bokeh in the background, casting a colorful glare over a faint reflection."
-            },
-            {
-                triggers: ['jazz', 'track', 'music', 'softly', 'background', 'breathe', 'human'],
-                shot: "A slow, sweeping crane shot over a vintage turntable platter spinning a vinyl record under moody, low-key amber lighting, emphasizing an artistic, slow-paced atmosphere."
-            },
-            {
-                triggers: ['pacing', 'modern', 'seasonal', 'shows', 'sprint', 'cliffhanger', 'slow down'],
-                shot: "A split-screen contrast or quick juxtaposition: on one side, hyper-fast glitched editing timelines representing modern media; on the other, a peaceful, static camera observing nature or art."
-            }
-        ];
-
-        window.generateBalancedShots = function() {
-            const scriptText = document.getElementById('scriptInput').value.trim();
-            const output = document.getElementById('outputContainer');
-
-            if (!scriptText) {
-                alert('Please paste a script first!');
-                return;
-            }
-
-            output.innerHTML = "<span class='text-purple-400 animate-pulse'>Director engine is blocking out scene pacing... 🎬</span>";
-
-            setTimeout(() => {
-                // Split the script into major structural narrative chunks (paragraphs or paired lines)
-                // This keeps our final count right in that perfect 5-8 zone
-                const narrativeChunks = scriptText.split('\n\n').filter(c => c.trim().length > 10);
-                
-                // If the user pastes text without double spacing, group sentences into blocks of two
-                let processingBlocks = [];
-                if (narrativeChunks.length <= 1) {
-                    const sentences = scriptText.split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 5);
-                    for (let i = 0; i < sentences.length; i += 2) {
-                        const block = sentences.slice(i, i + 2).join('. ') + '.';
-                        if (block.length > 15) processingBlocks.push(block);
-                    }
-                } else {
-                    processingBlocks = narrativeChunks;
-                }
-
-                let finalShotList = [];
-
-                processingBlocks.forEach((block, index) => {
-                    const lowerBlock = block.toLowerCase();
-                    let bestMatch = null;
-                    let highestScore = 0;
-
-                    // Score each block based on thematic weights to find the best director choice
-                    visualMatrix.forEach(matrixItem => {
-                        let score = 0;
-                        matrixItem.triggers.forEach(word => {
-                            if (lowerBlock.includes(word)) score++;
-                        });
-
-                        if (score > highestScore) {
-                            highestScore = score;
-                            bestMatch = matrixItem;
-                        }
-                    });
-
-                    // Pull the best creative option, or use an elegant adaptive fallback
-                    let customShotDescription = "";
-                    if (bestMatch && highestScore > 0) {
-                        customShotDescription = bestMatch.shot;
-                    } else {
-                        // Dynamic contextual fallback based on chunk index to keep variety high
-                        if (index === 0) {
-                            customShotDescription = "A clean, stylized talking-head shot introducing the topic, slowly pushing in to build an immediate hook with the audience.";
-                        } else if (index === processingBlocks.length - 1) {
-                            customShotDescription = "A wide, cinematic tracking shot moving away from an active editing workspace screen as the camera pans up into darkness.";
-                        } else {
-                            customShotDescription = "A slow-motion B-roll detail shot highlighting atmospheric textures (like glowing PC keys or spinning cooling fans) to bridge the narrative shift.";
-                        }
-                    }
-
-                    // Truncate focus line neatly for the UI layout
-                    let displayLine = block;
-                    if (displayLine.length > 90) {
-                        displayLine = displayLine.substring(0, 87) + "...";
-                    }
-
-                    finalShotList.push({
-                        line: displayLine,
-                        shot: customShotDescription
-                    });
-                });
-
-                renderShots(finalShotList);
-            }, 300);
-        }
-
-        function renderShots(shots) {
-            const output = document.getElementById('outputContainer');
-            output.innerHTML = "";
-            
-            shots.forEach((item, index) => {
-                const shotDiv = document.createElement('div');
-                shotDiv.className = "mb-4 pb-3 border-b border-gray-800 last:border-0";
-                shotDiv.innerHTML = `
-                    <p class="text-xs text-gray-400 italic mb-1">Theme Beat: "${item.line}"</p>
-                    <div class="flex items-start gap-2">
-                        <input type="checkbox" class="mt-1 accent-purple-500">
-                        <span class="text-gray-200 font-medium"><strong>Shot ${index+1}:</strong> ${item.shot}</span>
-                    </div>
-                `;
-                output.appendChild(shotDiv);
-            });
-            
-            window.currentShots = shots;
-        }
-
-        window.copyMarkdown = function() {
-            if (!window.currentShots) return alert("Nothing to copy yet!");
-            let md = "## 🎬 Shot List\n\n";
-            window.currentShots.forEach((item, i) => {
-                md += `- [ ] **Shot ${i+1}** (Beat: "${item.line}"): ${item.shot}\n`;
-            });
-            navigator.clipboard.writeText(md);
-            alert("Markdown checklist copied to clipboard!");
-        }
-    </script>
-</body>
-</html>
+                fast: "A quick panning shot out of your nearest window towards the sky, or a screen capture of a stylized clock graphics overlay.",
+                balanced: "A clean, stabilized time-lapse or slow pan of an urban landscape or clock face
