@@ -3,372 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎬 Vibe-Code Deep Script-to-Storyboard Matrix</title>
+    <title>🎬 Vibe-Code Cinematic Director Studio</title>
     <style>
-        /* Native CSS Styles to prevent CDN load crashes */
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: #0b0f19; color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 24px; max-width: 1400px; margin: 0 auto; }
+        body { background-color: #0b0f19; color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 24px; max-width: 1500px; margin: 0 auto; }
         header { text-align: center; margin-bottom: 32px; }
-        h1 { font-size: 2rem; font-weight: 800; background: linear-gradient(to right, #a855f7, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; }
+        h1 { font-size: 2.2rem; font-weight: 800; background: linear-gradient(to right, #c084fc, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; }
         .sub { color: #9ca3af; font-size: 0.9rem; }
-        .selector-box { background-color: #111827; border: 1px solid #1f2937; padding: 16px; rounded-size: 12px; border-radius: 12px; margin-bottom: 24px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); }
-        label { block: text; font-size: 11px; font-weight: 700; color: #a855f7; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 8px; }
-        select { w-full: 100%; width: 100%; background-color: #030712; border: 1px solid #374151; border-radius: 6px; padding: 12px; color: #e5e7eb; font-size: 14px; font-weight: 500; outline: none; transition: border-color 0.2s; }
-        select:focus { border-color: #a855f7; }
+        .selector-box { background-color: #111827; border: 1px solid #1f2937; padding: 16px; border-radius: 12px; margin-bottom: 24px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); }
+        label { font-size: 11px; font-weight: 700; color: #818cf8; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 8px; }
+        select { width: 100%; background-color: #030712; border: 1px solid #374151; border-radius: 6px; padding: 12px; color: #e5e7eb; font-size: 14px; font-weight: 500; outline: none; }
+        select:focus { border-color: #6366f1; }
         .workspace-layout { display: grid; grid-template-columns: 1fr; gap: 24px; }
-        @media (min-width: 1100px) { .workspace-layout { grid-template-columns: 350px 1fr; } }
+        @media (min-width: 1100px) { .workspace-layout { grid-template-columns: 380px 1fr; } }
         .panel-left { background-color: #111827; border: 1px solid #1f2937; padding: 16px; border-radius: 12px; height: fit-content; }
-        textarea { width: 100%; height: 280px; background-color: #030712; border: 1px solid #1f2937; border-radius: 12px; padding: 16px; color: #e5e7eb; font-size: 14px; resize: none; outline: none; margin-bottom: 16px; transition: border-color 0.2s; }
-        textarea:focus { border-color: #ec4899; }
-        button { width: 100%; background: linear-gradient(to right, #a855f7, #ec4899); color: white; font-weight: 700; padding: 14px; border: none; border-radius: 12px; cursor: pointer; font-size: 14px; transition: opacity 0.2s; }
+        textarea { width: 100%; height: 320px; background-color: #030712; border: 1px solid #1f2937; border-radius: 12px; padding: 16px; color: #e5e7eb; font-size: 14px; resize: none; outline: none; margin-bottom: 16px; line-height: 1.6; }
+        textarea:focus { border-color: #818cf8; }
+        button { width: 100%; background: linear-gradient(to right, #6366f1, #a855f7); color: white; font-weight: 700; padding: 14px; border: none; border-radius: 12px; cursor: pointer; font-size: 14px; transition: opacity 0.2s; }
         button:hover { opacity: 0.9; }
-        .copy-btn { width: auto; background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.4); padding: 6px 12px; border-radius: 6px; color: #c084fc; font-size: 11px; }
+        .copy-btn { background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.4); padding: 6px 12px; border-radius: 6px; color: #818cf8; font-size: 11px; cursor: pointer; }
         .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; color: #e5e7eb; font-weight: 600; }
-        #outputContainer { background-color: #111827; border: 1px solid #1f2937; border-radius: 12px; padding: 20px; min-height: 500px; color: #9ca3af; font-size: 14px; }
-        .storyboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 20px; }
-        .panel-card { background-color: #030712; border: 1px solid #1f2937; border-radius: 12px; overflow: hidden; display: flex; flex-col: layout; flex-direction: column; }
-        .aspect-16-9 { aspect-ratio: 16 / 9; position: relative; overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center; padding: 8px; border-b: 1px solid #111827; }
-        .camera-grid::before { content: ''; position: absolute; inset: 0; border-left: 1px dashed rgba(236, 72, 153, 0.1); border-right: 1px dashed rgba(236, 72, 153, 0.1); pointer-events: none; }
-        .camera-grid::after { content: ''; position: absolute; inset: 0; border-top: 1px dashed rgba(236, 72, 153, 0.1); border-bottom: 1px dashed rgba(236, 72, 153, 0.1); pointer-events: none; }
-        .cam-tag { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.7); padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 10px; color: #9ca3af; border: 1px solid #1f2937; }
-        .time-tag { position: absolute; bottom: 8px; right: 8px; background: rgba(157, 23, 77, 0.8); padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 10px; color: #f472b6; border: 1px solid rgba(244, 114, 182, 0.3); }
-        .meta-bar { padding: 12px; background: rgba(17, 24, 39, 0.4); border-bottom: 1px solid rgba(31, 41, 55, 0.6); font-family: monospace; font-size: 11px; }
-        .meta-title { color: #c084fc; font-weight: 700; margin-bottom: 2px; text-transform: uppercase; }
-        .meta-framing { color: #9ca3af; font-size: 11px; }
-        .card-content { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
-        .script-quote { font-size: 12px; color: #6b7280; italic: true; font-style: italic; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .task-row { display: flex; gap: 8px; background: rgba(17, 24, 39, 0.2); padding: 8px; border-radius: 6px; border: 1px solid #111827; }
-        .task-check { margin-top: 3px; width: 14px; height: 14px; accent-color: #ec4899; shrink: 0; }
-        .task-text { color: #d1d5db; font-size: 12px; line-height: 1.5; }
-        .status-msg { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 0; text-align: center; color: #a855f7; font-weight: 600; }
-        .status-sub { color: #6b7280; font-size: 11px; font-weight: 400; margin-top: 4px; }
+        #outputContainer { background-color: #111827; border: 1px solid #1f2937; border-radius: 12px; padding: 20px; min-height: 550px; }
+        .storyboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; }
+        .panel-card { background-color: #030712; border: 1px solid #1f2937; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); }
+        .aspect-16-9 { aspect-ratio: 16 / 9; position: relative; overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center; padding: 8px; border-bottom: 1px solid #111827; }
+        .camera-grid::before { content: ''; position: absolute; inset: 0; border-left: 1px dashed rgba(99, 102, 241, 0.12); border-right: 1px dashed rgba(99, 102, 241, 0.12); pointer-events: none; }
+        .camera-grid::after { content: ''; position: absolute; inset: 0; border-top: 1px dashed rgba(99, 102, 241, 0.12); border-bottom: 1px dashed rgba(99, 102, 241, 0.12); pointer-events: none; }
+        .cam-tag { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.75); padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 10px; color: #9ca3af; border: 1px solid #1f2937; }
+        .time-tag { position: absolute; bottom: 8px; right: 8px; background: rgba(30, 27, 75, 0.85); padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 10px; color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.4); }
+        .meta-bar { padding: 12px; background: rgba(17, 24, 39, 0.6); border-bottom: 1px solid #1f2937; }
+        .meta-title { color: #a5b4fc; font-weight: 700; font-size: 12px; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .meta-framing { color: #9ca3af; font-size: 11px; font-family: monospace; }
+        .card-content { padding: 14px; flex-grow: 1; display: flex; flex-direction: column; }
+        .script-quote { font-size: 12px; color: #fb7185; font-style: italic; margin-bottom: 14px; padding-left: 8px; border-left: 2px solid #f43f5e; line-height: 1.4; }
+        
+        /* Deep Direction Blocks */
+        .directive-section { margin-bottom: 12px; }
+        .directive-label { font-size: 10px; font-weight: 800; text-transform: uppercase; color: #f43f5e; margin-bottom: 4px; letter-spacing: 0.05em; }
+        .directive-text { font-size: 12.5px; color: #e5e7eb; line-height: 1.5; }
+        .rationale-label { font-size: 10px; font-weight: 800; text-transform: uppercase; color: #10b981; margin-bottom: 4px; letter-spacing: 0.05em; }
+        .rationale-text { font-size: 12px; color: #9ca3af; line-height: 1.4; font-style: italic; }
+        
+        .status-msg { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 64px 0; text-align: center; color: #6366f1; font-weight: 600; }
+        .status-sub { color: #6b7280; font-size: 12px; margin-top: 6px; }
+        .empty-state { color: #4b5563; text-align: center; padding: 48px; font-style: italic; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>🎬 Vibe-Code: Solo Storyboard Studio</h1>
-        <div class="sub">Deep Tier Differentiation — System Native Local Studio Layout</div>
+        <h1>🎬 Vibe-Code: Cinematic Director Studio</h1>
+        <div class="sub">Contextual Asset Sourcing Matrix — Eliminating Generic Workflow Text</div>
     </header>
 
     <div class="selector-box">
         <label>📅 Select Your Project Deadline & Effort Window</label>
         <select id="productionTier" onchange="triggerAutoRegenerate()">
-            <option value="tier1" selected>🚀 Tier 1: Speed Run (1-2 Days Max) — Simple compositions, rapid unedited sourcing, quick timeline assembly</option>
-            <option value="tier2">⏳ Tier 2: Steady Grind (3-5 Days) — Custom soundscapes, camera framing trajectories, precise transient matching</option>
-            <option value="tier3">🏆 Tier 3: Full Week Masterpiece — Advanced composite nodes, original 3D asset unwrap grinds, high-concept visual layers</option>
+            <option value="tier1" selected>🚀 Tier 1: Speed Run — High-impact, standalone stock clips & raw anime edits</option>
+            <option value="tier2">⏳ Tier 2: Steady Grind — Seamless soundscape layering, clean graphical framing tracking</option>
+            <option value="tier3">🏆 Tier 3: Full Masterpiece — Bespoke 3D assets, complex dynamic effects nodes, layered visual compositions</option>
         </select>
     </div>
 
     <div class="workspace-layout">
         <div class="panel-left">
             <label>📜 Paste Your Script</label>
-            <textarea id="scriptInput" placeholder="Paste your video script here... Try mentioning keywords like anime, mecha, clock, cityscape, rain, or jazz to trigger specific visual framing designs."></textarea>
-            <button id="generateBtn" onclick="generateStoryboardBlueprint()">⚡ Generate Visual Storyboard</button>
+            <textarea id="scriptInput" placeholder="Paste your script text blocks here... Typos or keywords like anime, mecha, robot, cityscape, rain, or jazz will immediately trigger specific, thematic visual assets."></textarea>
+            <button id="generateBtn" onclick="generateStoryboardBlueprint()">⚡ Analyze Cinematic Context</button>
         </div>
 
         <div>
             <div class="panel-header">
-                <div>📋 Multi-Panel Production Storyboard</div>
-                <button class="copy-btn" onclick="copyMarkdown()">Copy Board Markdown</button>
+                <div>📋 Intent-Based Production Storyboard</div>
+                <button class="copy-btn" onclick="copyMarkdown()">Copy Director Markdown</button>
             </div>
-            <div id="outputContainer">
-                Visual 16:9 layout framing grid and asset checklist will display directly in this viewport panel once calculated...
+            <div id="outputContainer" class="empty-state">
+                Input your narrative script lines into the control panel to generate specific asset descriptions and editorial justifications...
             </div>
         </div>
     </div>
 
     <script>
+        // Completely contextual director profiles mapped out across specific keyword vectors
         const tierMatrixMap = [
             {
                 triggers: ['robot', 'mecha', 'monster', 'action', 'explosion', 'flashy', 'sequences', 'anime'],
-                title: "💥 Action Sequence Beat",
+                title: "💥 Core Action Sequence",
                 tier1: {
-                    framing: "Static Medium Shot // Raw Action Cut",
-                    task: "🚀 **Task:** Use `yt-dlp` to grab a high-quality 1080p source clip matching your **[CONTEXT]** reference. Execute direct razor cuts (C) in Premiere to strip setup padding, letting the clip play raw on the timeline.",
+                    framing: "Static Mid-Shot // Fast Kinetic Cut",
+                    what: "Source a clean, high-framerate **anime clip** showcasing giant mecha frames or mecha thrusters igniting. Ensure the aesthetic leans into dark, saturated hues with stark rim lighting.",
+                    why: "To establish immediate narrative weight without wasting time. Cutting directly on the motion frame forces the viewer's eyes to snap to attention.",
                     time: "15 Mins",
-                    svg: '<svg viewBox="0 0 160 90" style="width:100%;height:100%;opacity:0.6;"><rect width="160" height="90" fill="none"/><path d="M30,65 L130,65" stroke="#f43f5e" stroke-width="2"/><circle cx="80" cy="45" r="10" fill="none" stroke="#a855f7" stroke-width="2"/><text x="48" y="80" fill="#6b7280" font-size="7" font-family="monospace">STATIC ACTION PLATE</text></svg>'
+                    svg: '<svg viewBox="0 0 160 90" style="width:100%;height:100%;opacity:0.6;"><path d="M20,70 L50,25 L90,20 L140,55" stroke="#f43f5e" stroke-width="2" fill="none"/><circle cx="50" cy="25" r="6" fill="#6366f1"/><text x="15" y="82" fill="#6b7280" font-size="7" font-family="monospace">ANIME MECHA IGNITION SOURCE</text></svg>'
                 },
                 tier2: {
-                    framing: "Dynamic Whip-Pan // Audio Synchronized",
-                    task: "⏳ **Task:** Harvest unwatermarked **[CONTEXT]** trailer sequences. Match frame cuts precisely onto heavy transient audio spikes of your background mix; deploy swift white single-frame flash layers under cuts.",
-                    time: "50 Mins",
-                    svg: '<svg viewBox="0 0 160 90" style="width:100%;height:100%;opacity:0.6;"><path d="M10,45 L40,45 M120,45 L150,45" stroke="#6b7280" stroke-width="1"/><path d="M50,25 L110,65 M50,65 L110,25" stroke="#f43f5e" stroke-width="2" stroke-dasharray="3 2"/><text x="44" y="80" fill="#a855f7" font-size="7" font-family="monospace">WHIP-PAN MOTION SYNC</text></svg>'
-                },
-                tier3: {
-                    framing: "Extreme Depth Composite // Dynamic Link",
-                    task: "🏆 **Task:** Log a localized directory of high-bitrate **[CONTEXT]** episode layers. Resolve VFR audio sync slip anomalies, establish an After Effects dynamic link, and track custom procedural screen shake arrays.",
-                    time: "3.5 Hours",
-                    svg: '<svg viewBox="0 0 160 90" style="width:100%;height:100%;opacity:0.6;"><rect width="160" height="90" fill="none"/><path d="M10,80 L40,20 L80,10 L120,50 L150,15" stroke="#f43f5e" stroke-width="1.5" fill="none"/><circle cx="40" cy="20" r="6" fill="#a855f7"/><text x="35" y="82" fill="#6b7280" font-size="7" font-family="monospace">AE COMPOSITE TRACKING NODES</text></svg>'
-                }
-            },
-            {
-                triggers: ['model kit', 'plastic', 'shelf', 'toy', 'figure', 'kits'],
-                title: "🤖 3D Showcase Asset",
-                tier1: {
-                    framing: "Fixed Center Turntable View",
-                    task: "🚀 **Task:** Open your global pre-configured Blender display template scene. Drop a simple 3D text block identifying your **[CONTEXT]** theme directly over the primary viewport container.",
-                    time: "20 Mins",
-                    svg: '<svg viewBox="0 0 160 90" style="width:100%;height:100%;opacity:0.6;"><ellipse cx="80" cy="70" rx="40" ry="10" fill="none" stroke="#6b7280"/><rect x="65" y="30" width="30" height="35" fill="none" stroke="#a855f7" stroke-width="1.5"/><text x="50" y="20" fill="#f43f5e" font-size="7" font-family="monospace">TEMPLATE BOUNDS</text></svg>'
-                },
-                tier2: {
-                    framing: "Macro Probe Zoom // Target Path",
-                    task: "⏳ **Task:** Download an optimized, high-fidelity **[CONTEXT]** character mesh from Sketchfab. Place it in Blender and keyframe a smooth, slow linear camera translation straight into the main focal point.",
-                    time: "75 Mins",
-                    svg: '<svg viewBox="0 0 160 90" style="width:100%;height:100%;opacity:0.6;"><circle cx="80" cy="45" r="24" fill="none" stroke="#a855f7" stroke-width="2"/><line x1="10" y1="10" x2="56" y2="30" stroke="#f43f5e" stroke-width="1" stroke-dasharray="2 2"/><text x="45" y="80" fill="#6b7280" font-size="7" font-family="monospace">KEYFRAMED FOCUS ZOOM</text></svg>'
-                },
-                tier3: {
-                    framing: "Cycles Ray-Trace Showcase // Nodes",
-                    task: "🏆 **Task:** Construct unique hard-surface low-poly display elements for your **[CONTEXT]** model in Blender. Manually unwrap UV channels, map custom procedural node shaders, and bake maps via Cycles.",
-                    time: "4.5 Hours",
-                    svg: '<svg viewBox="0 0 160 90" style="width:100%;height:100%;opacity:0.6;"><path d="M40,20 L120,20 L140,70 L20,70 Z" fill="none" stroke="#a855f7" stroke-width="1.5"/><line x1="40" y1="20" x2="20" y2="70" stroke="#f43f5e"/><line x1="120" y1="20" x2="140" y2="70" stroke="#f43f5e"/><text x="42" y="48" fill="#6b7280" font-size="7" font-family="monospace">CUSTOM UV SHADER NODE MAPPING</text></svg>'
-                }
-            },
-            {
-                triggers: ['quiet', 'silence', 'elevator', 'isolation', 'agonizing', 'stretches', 'clock', 'timer'],
-                title: "⏳ Minimalist Timing Layout",
-                tier1: {
-                    framing: "Flat Display // Browser Capture",
-                    task: "🚀 **Task:** Have AI output a basic local HTML countdown module stylized around your script's **[CONTEXT]** wording. Boot it inside a browser container and capture the frame instantly using system recorder overlays.",
-                    time: "10 Mins",
-                    svg: '<svg viewBox="0 0 160 90" style="width:100%;height:100%;opacity:0.6;"><text x="48" y="52" fill="#a855f7" font-size="16" font-family="monospace" font-weight="bold">00:00:00</text></svg>'
-                },
-                tier2: {
-                    framing: "CSS Keyframe Pulse Overlay",
-                    task: "⏳ **Task:** Access your local web code script text. Manually write customized CSS `@keyframes` properties to attach a slow, moody visual alpha respiration pulse sequence over the central **[CONTEXT]** interface.",
-                    time: "35 Mins",
-                    svg: '<svg viewBox="0 0 160 90" style="width:100%;height:100%;opacity:0.6;"><text x="52" y="50" fill="#f43f5e" font-size="14" font-family="monospace" opacity="0.4">00:00</text><circle cx="80" cy="45" r="30" fill="none" stroke="#a855f7" stroke-dasharray="4 4"/></svg>'
-                },
-                tier3: {
-                    framing: "GSAP Advanced Dynamic Framework",
-                    task: "🏆 **Task:** Engineer an advanced interactive HTML canvas layout thread. Inject external GSAP timeline hooks into your source configuration to smoothly slide, scale, and manipulate vector metrics tracking the **[CONTEXT]** aura.",
-                    time: "2.5 Hours",
-                    svg: '<svg viewBox="0 0 160 90" style="width:100%;height:100%;opacity:0.6;"><path d="M10,45 Q80,10 150,45 T290,45" fill="none" stroke="#374151"/><rect x="60" y="35" width="40" height="20" fill="none" stroke="#a855f7"/><text x="64" y="47" fill="#f43f5e" font-size="8" font-family="monospace">GSAP.JS LOOP</text></svg>'
-                }
-            },
-            {
-                triggers: ['cityscapes', 'empty cityscapes', 'empty streets', 'ticking clock', 'window', 'rain', 'staring', 'reflection'],
-                title: "🌆 Cinematic Landscape B-Roll",
-                tier1: {
-                    framing: "Locked Wide Angle // Continuous View",
-                    task: "🚀 **Task:** Cut a continuous, long block of static, clean uncompressed footage showing atmospheric **[CONTEXT]** backgrounds. Let the frame breathe on screen without fast structural shifts.",
-                    time: "15 Mins",
-                    svg: '<svg viewBox="0 0 160 90" style="width:100%;height:100%;opacity:0.5;"><line x1="0" y1="70" x2="160" y2="70" stroke="#6b7280"/><rect x="20" y="30" width="30" height="40" fill="none" stroke="#374151"/><rect x="110" y="20" width="35" height="50" fill="none" stroke="#374151"/><text x="58" y="45" fill="#a855f7" font-size="8" font-family="monospace">STATIC WIDE</text></svg>'
-                },
-                tier2: {
-                    framing: "Dual-Layer Split Screen // Glare Wash",
-                    task: "⏳ **Task:** Track down raw high-bitrate clips capturing **[CONTEXT]** text imagery. Layer a dark, low-opacity color mask over the block and compile ambient audio sound design hums right under the primary audio slots.",
+                    framing: "Whip-Pan Transition // Impact Linked",
+                    what: "Gather high-bitrate, crisp **anime or sci-fi sequences** of mechanical joints shifting under stress. Layer a metallic mechanical screech or mechanical air-hiss sound effect precisely on the cut point.",
+                    why: "By tying the visual motion directly to a sharp transient audio element, you amplify the mechanical illusion, making the clip feel physically massive.",
                     time: "45 Mins",
-                    svg: '<svg viewBox="0 0 160 90" style="width:100%;height:100%;opacity:0.6;"><line x1="80" y1="0" x2="80" y2="90" stroke="#a855f7" stroke-width="1.5"/><text x="15" y="48" fill="#6b7280" font-size="7" font-family="monospace">CLIP A</text><text x="95" y="48" fill="#f43f5e" font-size="7" font-family="monospace">REFLECT GLARE</text></svg>'
-                },
-                tier3: {
-                    framing: "Multi-Point Track Matte // Glass Bokeh",
-                    task: "🏆 **Task:** Open After Effects. Anchor localized precise point tracking pins directly onto your environmental **[CONTEXT]** background plate. Blend macro rain-slicked glass bokeh textures flawlessly over the moving characters.",
-                    time: "3 Hours",
-                    svg: '<svg viewBox="0 0 160 90" style="width:100%;height:100%;opacity:0.6;"><circle cx="40" cy="30" r="12" fill="none" stroke="#f43f5e" stroke-width="0.5"/><circle cx="120" cy="60" r="18" fill="none" stroke="#a855f7" stroke-width="0.5"/><text x="48" y="48" fill="#6b7280" font-size="7" font-family="monospace">LUMA MATTE TRACKING</text></svg>'
-                }
-            },
-            {
-                triggers: ['jazz', 'track', 'music', 'softly', 'melancholic', 'human', 'breathe'],
-                title: "💨 Floating Abstract Atmosphere",
-                tier1: {
-                    framing: "Flat Particle Canvas Background",
-                    task: "🚀 **Task:** Ask AI for a simple web canvas page code setup rendering floating circles. Run the .html file locally and screen-capture it to generate a low-intensity mood backdrop layer syncing with your **[CONTEXT]** beat.",
-                    time: "15 Mins",
-                    svg: '<svg viewBox="0 0 160 90" style="width:100%;height:100%;opacity:0.6;"><circle cx="40" cy="25" r="2" fill="#6b7280"/><circle cx="110" cy="65" r="3" fill="#6b7280"/><text x="42" y="48" fill="#a855f7" font-size="8" font-family="monospace">FLAT CANVAS CAPTURE</text></svg>'
-                },
-                tier2: {
-                    framing: "Floating Dust Array // Alpha Dissolve",
-                    task: "⏳ **Task:** Modify the canvas script variables directly. Change properties so the shapes morph into soft, white abstract dust particles moving gently upward; update alpha settings so they dissolve into your **[CONTEXT]** rhythm.",
-                    time: "45 Mins",
-                    svg: '<svg viewBox="0 0 160 90" style="width:100%;height:100%;opacity:0.6;"><path d="M40,80 C40,50 80,40 80,10" fill="none" stroke="#f43f5e" stroke-width="1"/><circle cx="80" cy="35" r="4" fill="none" stroke="#a855f7"/><text x="45" y="75" fill="#6b7280" font-size="7" font-family="monospace">ALPHA PULSE DUST</text></svg>'
-                },
-                tier3: {
-                    framing: "Audio Vector Array // Frequency Bound",
-                    task: "🏆 **Task:** Write a complex 3D vector calculation script inside your canvas page file. Bind partical particle velocity arrays to read and move dynamically based on external **[CONTEXT]** background music tracking parameters.",
-                    time: "3 Hours",
-                    svg: '<svg viewBox="0 0 160 90" style="width:100%;height:100%;opacity:0.6;"><path d="M10,70 L30,20 L50,80 L70,40 L90,85 L110,15 L130,60 L150,45" fill="none" stroke="#a855f7" stroke-width="1.5"/><text x="35" y="82" fill="#6b7280" font-size="7" font-family="monospace">AUDIO TRANSIENT SPECTRUM LINK</text></svg>'
-                }
-            }
-        ];
-
-        window.generateStoryboardBlueprint = function() {
-            try {
-                const scriptInputEl = document.getElementById('scriptInput');
-                const outputEl = document.getElementById('outputContainer');
-                const tierSelect = document.getElementById('productionTier');
-
-                if (!scriptInputEl || !outputEl || !tierSelect) {
-                    alert("Interface error. Please reload the browser window.");
-                    return;
-                }
-
-                const scriptText = scriptInputEl.value.trim();
-                const currentTier = tierSelect.value;
-
-                if (!scriptText) {
-                    alert('Please paste your video script first!');
-                    return;
-                }
-
-                outputEl.innerHTML = `
-                    <div class="status-msg">
-                        <div>⚙️ Running Structural Narrative Parse Loop...</div>
-                        <div class="status-sub">Isolating tier timeline parameters and drawing vector frames</div>
-                    </div>`;
-
-                const sentences = scriptText.split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 10);
-                let processingBlocks = [];
-
-                if (sentences.length <= 1) {
-                    processingBlocks.push(scriptText);
-                } else {
-                    for (let i = 0; i < sentences.length; i += 2) {
-                        const block = sentences.slice(i, i + 2).join('. ') + '.';
-                        if (block.length > 12) processingBlocks.push(block);
-                    }
-                }
-
-                let finalBlueprint = [];
-
-                processingBlocks.forEach((block) => {
-                    const lowerBlock = block.toLowerCase();
-                    let matchedData = null;
-                    let topScore = 0;
-                    let contextualKeyword = "narrative script";
-
-                    const contextKeywords = ['anime', 'mecha', 'robot', 'model kit', 'plastic', 'figure', 'cityscape', 'jazz', 'music', 'teenager', 'rain', 'clock', 'timer'];
-                    for (let word of contextKeywords) {
-                        if (lowerBlock.includes(word)) {
-                            contextualKeyword = word;
-                            break;
-                        }
-                    }
-
-                    tierMatrixMap.forEach(item => {
-                        let score = 0;
-                        item.triggers.forEach(word => {
-                            if (lowerBlock.includes(word)) score++;
-                        });
-                        if (score > topScore) {
-                            topScore = score;
-                            matchedData = item;
-                        }
-                    });
-
-                    let assetTitle = "🎬 General Video Segment";
-                    let finalInstruction = "";
-                    let allocatedTime = "20 Mins";
-                    let frameType = "Standard Frame // Medium Focal Layout";
-                    let vectorArt = '<svg viewBox="0 0 160 90" style="width:100%;height:100%;opacity:0.4;"><rect width="160" height="90" fill="none"/><line x1="10" y1="45" x2="150" y2="45" stroke="#374151" stroke-width="0.75" stroke-dasharray="4 4"/><text x="45" y="49" fill="#6b7280" font-size="6" font-family="monospace">[GENERIC SOURCE LAYER]</text></svg>';
-
-                    if (matchedData && topScore > 0) {
-                        const tierData = matchedData[currentTier];
-                        assetTitle = matchedData.title;
-                        finalInstruction = tierData.task;
-                        allocatedTime = tierData.time;
-                        frameType = tierData.framing;
-                        vectorArt = tierData.svg;
-                    } else {
-                        if (currentTier === 'tier1') {
-                            assetTitle = "🚀 Fast-Track Segment";
-                            finalInstruction = `🚀 Rapidly harvest an uncompressed visual asset specifically showing **${contextualKeyword}** content. Drop it onto the timeline using simple scale parameters to close the track today.`;
-                            allocatedTime = "15 Mins";
-                            frameType = "Static View // Raw Timeline Layout";
-                        } else if (currentTier === 'tier2') {
-                            assetTitle = "⏳ Custom Sequence Unit";
-                            finalInstruction = `⏳ Design a targeted sequence highlighting your **${contextualKeyword}** topic. Use position keyframes to track focus and insert a clean sound design riser under the cut.`;
-                            allocatedTime = "45 Mins";
-                            frameType = "Pan Track // Keyframe Motion Path";
-                        } else {
-                            assetTitle = "🏆 Masterpiece Development Grid";
-                            finalInstruction = `🏆 Build a deep structural timeline configuration around your **${contextualKeyword}** elements. Nest tracks, apply custom color mapping fields, and optimize audio tracking variables.`;
-                            allocatedTime = "3 Hours";
-                            frameType = "Multi-Layer Node Stack // Composition FX";
-                        }
-                    }
-
-                    finalInstruction = finalInstruction.replace(/\[CONTEXT\]/g, `**${contextualKeyword}**`);
-                    let displayTruncatedLine = block.length > 95 ? block.substring(0, 92) + "..." : block;
-
-                    finalBlueprint.push({
-                        title: assetTitle,
-                        line: displayTruncatedLine,
-                        task: finalInstruction,
-                        duration: allocatedTime,
-                        framing: frameType,
-                        vector: vectorArt
-                    });
-                });
-
-                renderStoryboardUI(finalBlueprint);
-
-            } catch (err) {
-                console.error("Storyboard Processing Error:", err);
-                document.getElementById('outputContainer').innerHTML = 
-                    `<div style="color:#f87171; padding:20px;">Execution Error: ${err.message}. Check your script string syntax data.</div>`;
-            }
-        }
-
-        function renderStoryboardUI(blueprint) {
-            const outputEl = document.getElementById('outputContainer');
-            if (!outputEl) return;
-            
-            outputEl.innerHTML = "";
-            
-            const boardContainer = document.createElement('div');
-            boardContainer.className = "storyboard-grid";
-            
-            blueprint.forEach((item, index) => {
-                const panelCard = document.createElement('div');
-                panelCard.className = "panel-card";
-                
-                panelCard.innerHTML = `
-                    <div class="aspect-16-9 camera-grid">
-                        ${item.vector}
-                        <div class="cam-tag">CAM MTR: #${index + 1}</div>
-                        <div class="time-tag">${item.duration}</div>
-                    </div>
-                    <div class="meta-bar">
-                        <div class="meta-title">${item.title}</div>
-                        <div class="meta-framing">🎬 ${item.framing}</div>
-                    </div>
-                    <div class="card-content">
-                        <p class="script-quote">"${item.line}"</p>
-                        <div class="task-row">
-                            <input type="checkbox" class="task-check">
-                            <p class="task-text">${item.task}</p>
-                        </div>
-                    </div>
-                `;
-                boardContainer.appendChild(panelCard);
-            });
-            
-            outputEl.appendChild(boardContainer);
-            window.currentBlueprint = blueprint;
-        }
-
-        window.triggerAutoRegenerate = function() {
-            const scriptInputEl = document.getElementById('scriptInput');
-            if (scriptInputEl && scriptInputEl.value.trim().length > 10) {
-                generateStoryboardBlueprint();
-            }
-        }
-
-        window.copyMarkdown = function() {
-            if (!window.currentBlueprint) return alert("Generate a storyboard project grid first!");
-            let md = "# 🎬 Your Production Storyboard & Visual Assets Guide\n\n";
-            window.currentBlueprint.forEach((item, i) => {
-                md += `## Panel ${i+1}: ${item.title}\n`;
-                md += `- **Camera Framing Layout**: ${item.framing}\n`;
-                md += `- **Target Time Budget**: ${item.duration}\n`;
-                md += `- **Script Segment**: "${item.line}"\n`;
-                md += `- [ ] **Action Task**: ${item.task}\n\n`;
-                md += `---\n\n`;
-            });
-            navigator.clipboard.writeText(md);
-            alert("Storyboard production markdown clipboard copy completed!");
-        }
-    </script>
-</body>
-</html>
+                    svg: '<svg viewBox="0 0 160 90" style="width:100%;height:100%;opacity:0.6;"><path d="M10,45 L150,45" stroke="#6366f1" stroke-dasharray="4 2"/><path d="M60,15 L100,75" stroke="#f43f5e" stroke-width
