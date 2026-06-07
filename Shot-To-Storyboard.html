@@ -11,10 +11,12 @@
         h1 { color: #a855f7; margin-bottom: 5px; }
         .config-box { background: #111827; padding: 20px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #1f2937; }
         label { display: block; font-size: 12px; color: #a855f7; font-weight: bold; margin-bottom: 8px; text-transform: uppercase; }
-        input, textarea { width: 100%; background: #030712; border: 1px solid #374151; color: white; padding: 12px; border-radius: 6px; font-size: 14px; margin-bottom: 15px; }
+        input, textarea { width: 100%; background: #030712; border: 1px solid #374151; color: white; padding: 12px; border-radius: 6px; font-size: 14px; margin-bottom: 15px; outline: none; }
+        input:focus, textarea:focus { border-color: #a855f7; }
         textarea { height: 180px; resize: none; }
         button { background: #a855f7; color: white; border: none; padding: 14px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; font-size: 14px; }
         button:hover { opacity: 0.9; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
         #outputContainer { background: #111827; padding: 20px; border-radius: 8px; min-height: 150px; border: 1px solid #1f2937; color: #9ca3af; margin-top: 10px; }
         .storyboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
         .panel-card { background: #030712; border: 1px solid #1f2937; border-radius: 8px; padding: 16px; }
@@ -26,11 +28,11 @@
 
     <header>
         <h1>🎬 AI Storyboard Studio</h1>
-        <p style="color: #9ca3af;">Serverless API Workstation</p>
+        <p style="color: #9ca3af;">Serverless API Workstation Layout</p>
     </header>
 
     <div class="config-box">
-        <label>🔑 Hugging Face Access Token</label>
+        <label>🔑 Hugging Face Fine-Grained Access Token</label>
         <input type="text" id="hfToken" placeholder="hf_xxxxxxxxxxxxxxxxxxxxxxxxxx">
         
         <label>📜 Video Script Input</label>
@@ -52,35 +54,50 @@
             if (!token || !script) return alert("Please fill in both fields!");
 
             btn.disabled = true;
-            output.innerHTML = `<div class="status-msg">⏳ Connecting to serverless clusters...</div>`;
+            output.innerHTML = `<div class="status-msg">⏳ Connecting via Fine-Grained Provider Router Matrix...</div>`;
 
-            const systemInstruction = "You are an automated storyboard designer. Convert the text into a JSON array containing exactly 3 panel steps. Do not use markdown wrappers or backticks. Return the raw array string directly.";
-            const structuredPrompt = `<|im_start|>system\n${systemInstruction}<|im_end|>\n<|im_start|>user\nScript: ${script}<|im_end|>\n<|im_start|>assistant\n`;
+            const systemInstruction = `Convert the script into a structured JSON array containing exactly 3 timeline items. Each object must use exactly these keys: "title", "framing", "task". Do not include any markdown syntax wrappers, explanatory text, or backticks (\`\`\`). Return ONLY raw JSON text.`;
 
             try {
-                const res = await fetch("https://api-inference.huggingface.co/models/Qwen/Qwen2.5-7B-Instruct", {
+                // Switched to the modern endpoint schema compatible with provider token logic
+                const res = await fetch("https://api-inference.huggingface.co/v1/chat/completions", {
                     method: "POST",
-                    headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
+                    headers: { 
+                        "Authorization": `Bearer ${token}`, 
+                        "Content-Type": "application/json" 
+                    },
                     body: JSON.stringify({
-                        inputs: structuredPrompt,
-                        parameters: { max_new_tokens: 600, return_full_text: false, temperature: 0.2 }
+                        model: "Qwen/Qwen2.5-7B-Instruct",
+                        messages: [
+                            { role: "system", content: systemInstruction },
+                            { role: "user", content: script }
+                        ],
+                        max_tokens: 600,
+                        temperature: 0.1
                     })
                 });
 
+                // Automated on-demand server cluster warmup monitor
                 if (res.status === 503) {
-                    output.innerHTML = `<div class="status-msg">⏳ Model server is booting up. Please try again in 10 seconds!</div>`;
+                    output.innerHTML = `<div class="status-msg">⏳ Model server is currently waking up. Please click generate again in 8 seconds!</div>`;
                     btn.disabled = false;
                     return;
                 }
 
-                if (!res.ok) throw new Error(`HTTP Error Status: ${res.status}`);
+                if (!res.ok) {
+                    const errorDetails = await res.json().catch(() => ({}));
+                    throw new Error(errorDetails.error?.message || errorDetails.error || `HTTP Network Status Code: ${res.status}`);
+                }
 
                 const outData = await res.json();
-                let text = Array.isArray(outData) ? outData[0]?.generated_text : outData.generated_text;
+                let text = outData.choices?.[0]?.message?.content;
 
+                if (!text) throw new Error("The endpoint completed but left the text data frame wrapper empty.");
+
+                // Extraction parsing block
                 const startIdx = text.indexOf('[');
                 const endIdx = text.lastIndexOf(']');
-                if (startIdx === -1 || endIdx === -1) throw new Error("JSON processing alignment mismatch.");
+                if (startIdx === -1 || endIdx === -1) throw new Error("The model failed to format the response as a clean JSON array.");
 
                 const cleanArray = JSON.parse(text.substring(startIdx, endIdx + 1));
                 
@@ -93,15 +110,21 @@
                     card.className = "panel-card";
                     card.innerHTML = `
                         <div class="panel-title">🎬 Card ${index + 1}: ${item.title || 'Scene Sequence'}</div>
-                        <p style="font-size:13px; color:#9ca3af; margin-bottom:8px;">📐 ${item.framing || 'Wide Shot'}</p>
-                        <p style="font-size:13px; color:#e5e7eb;">⚙️ ${item.task || 'Process assets.'}</p>
+                        <p style="font-size:13px; color:#9ca3af; margin-bottom:8px;">📐 Framing: ${item.framing || 'Wide Shot'}</p>
+                        <p style="font-size:13px; color:#e5e7eb;">⚙️ Task: ${item.task || 'Process assets.'}</p>
                     `;
                     grid.appendChild(card);
                 });
                 output.appendChild(grid);
 
             } catch (err) {
-                output.innerHTML = `<div style="color:#f87171; padding:15px; border:1px dashed #f87171; border-radius:6px;">❌ Output Error: ${err.message}</div>`;
+                output.innerHTML = `
+                    <div style="color:#f87171; padding:15px; border:1px dashed #f87171; border-radius:6px; background: rgba(248,113,113,0.02); line-height: 1.5;">
+                        ❌ Network Exception: ${err.message}<br><br>
+                        <span style="color:#9ca3af; font-size:12px;">
+                            💡 Note: If errors continue, make sure to temporarily pause your browser's adblock shields (like Brave Shields or uBlock) on this page to prevent local connection blocking.
+                        </span>
+                    </div>`;
             }
             btn.disabled = false;
         }
