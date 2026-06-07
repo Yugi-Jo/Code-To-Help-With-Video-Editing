@@ -1,56 +1,60 @@
 <!DOCTYPE html>
-<html lang='en'>
+<html>
 <head>
-    <meta charset='UTF-8'>
-    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <title>🎬 Vibe-Code Hardened Director Studio</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: #0b0f19; color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 24px; max-width: 1500px; margin: 0 auto; }
-        header { text-align: center; margin-bottom: 32px; }
-        h1 { font-size: 2.2rem; font-weight: 800; background: linear-gradient(to right, #818cf8, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; }
-        .selector-box { background-color: #111827; border: 1px solid #1f2937; padding: 16px; border-radius: 12px; margin-bottom: 24px; }
-        select { width: 100%; background-color: #030712; border: 1px solid #374151; padding: 12px; color: #e5e7eb; border-radius: 6px; }
-        .workspace-layout { display: grid; grid-template-columns: 380px 1fr; gap: 24px; }
-        .panel-left { background-color: #111827; border: 1px solid #1f2937; padding: 16px; border-radius: 12px; height: fit-content; }
-        textarea { width: 100%; height: 320px; background-color: #030712; border: 1px solid #1f2937; padding: 16px; color: #e5e7eb; border-radius: 12px; margin-bottom: 16px; }
-        button { width: 100%; background: linear-gradient(to right, #6366f1, #a855f7); color: white; font-weight: 700; padding: 14px; border: none; border-radius: 12px; cursor: pointer; }
-        #outputContainer { background-color: #111827; border: 1px solid #1f2937; border-radius: 12px; padding: 20px; min-height: 550px; }
-        .storyboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; }
-        .panel-card { background-color: #030712; border: 1px solid #1f2937; border-radius: 12px; padding: 14px; }
-        .script-quote { color: #fb7185; font-style: italic; margin-bottom: 12px; }
-        .directive-text, .rationale-text { font-size: 13px; color: #e5e7eb; margin-bottom: 8px; }
-    </style>
+    <title>Director Studio</title>
 </head>
-<body>
-    <header><h1>🎬 Vibe-Code: Cinematic Director Studio</h1></header>
-    <div class='selector-box'>
-        <select id='productionTier'>
-            <option value='tier1'>🚀 Tier 1: Speed Run</option>
-            <option value='tier2'>⏳ Tier 2: Steady Grind</option>
-            <option value='tier3'>🏆 Tier 3: Full Masterpiece</option>
-        </select>
-    </div>
-    <div class='workspace-layout'>
-        <div class='panel-left'>
-            <textarea id='scriptInput' placeholder='Paste script here...'></textarea>
-            <button id='generateBtn'>⚡ Analyze Cinematic Context</button>
-        </div>
-        <div id='outputContainer'>Storyboard will appear here...</div>
-    </div>
+<body style="background-color: #111; color: white; padding: 20px; font-family: sans-serif;">
+
+    <textarea id="scriptInput" style="width: 100%; height: 200px; background: #222; color: #fff; border: 1px solid #444; padding: 10px;" placeholder="Paste script... Try keyword 'mecha'"></textarea>
+    
+    <select id="productionTier" style="width: 100%; margin-top: 10px; padding: 10px;">
+        <option value="tier1">Tier 1: Speed Run</option>
+        <option value="tier2">Tier 2: Steady Grind</option>
+    </select>
+
+    <button onclick="analyze()" style="width: 100%; margin-top: 10px; padding: 15px; background: blue; color: white; border: none; cursor: pointer;">
+        ⚡ ANALYZE SCRIPT
+    </button>
+
+    <div id="output" style="margin-top: 20px; border-top: 1px solid #444; padding-top: 20px;"></div>
 
     <script>
-        const tierMatrixMap = [
-            {
-                'triggers': ['robot', 'mecha', 'action', 'anime'],
-                'title': '💥 Core Action Sequence',
-                'tier1': { 'what': 'Source clean anime clip of mecha engines igniting.', 'why': 'Immediate engagement.', 'time': '15m' },
-                'tier2': { 'what': 'Link mechanical joint plates to SFX.', 'why': 'Physical momentum.', 'time': '45m' },
-                'tier3': { 'what': 'Apply HUD overlay and lens shake.', 'why': 'High-end production depth.', 'time': '3h' }
-            },
-            {
-                'triggers': ['cityscape', 'rain', 'fog', 'empty'],
-                'title': '🌆 Atmospheric Mood Plate',
-                'tier1': { 'what': 'Loop retro anime urban backdrop.', 'why': 'Slows pacing.', 'time': '15m' },
-                'tier2': { 'what': 'Split screen with dark overlays.', 'why': 'Isolation feel.', 'time': '45m' },
-                'tier3': { 'what': 'Track blurred bokeh
+        function analyze() {
+            var input = document.getElementById('scriptInput').value.toLowerCase();
+            var tier = document.getElementById('productionTier').value;
+            var out = document.getElementById('output');
+            
+            // Logic Island
+            var data = [
+                {
+                    'trigger': 'mecha',
+                    'title': '💥 Action Sequence',
+                    'tier1': 'Source high-framerate anime mecha clips.',
+                    'tier2': 'Layer mechanical SFX on cut points.'
+                },
+                {
+                    'trigger': 'jazz',
+                    'title': '🎷 Jazz Atmosphere',
+                    'tier1': 'Use slow, moody city shots.',
+                    'tier2': 'Sync particle overlays to beat.'
+                }
+            ];
+
+            out.innerHTML = ""; // Clear old content
+            
+            data.forEach(function(item) {
+                if (input.includes(item.trigger)) {
+                    out.innerHTML += "<div style='background:#1a1a1a; padding:15px; margin-bottom:10px; border-left: 5px solid #00f;'>" +
+                                     "<h3>" + item.title + "</h3>" +
+                                     "<p><b>Instruction:</b> " + item[tier] + "</p>" +
+                                     "</div>";
+                }
+            });
+            
+            if (out.innerHTML === "") {
+                out.innerHTML = "No matches found. Try typing 'mecha' or 'jazz'.";
+            }
+        }
+    </script>
+</body>
+</html>
