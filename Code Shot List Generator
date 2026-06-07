@@ -18,11 +18,10 @@
         <p class="text-gray-400 mt-2">Paste your video script and let AI map out your visual shot list.</p>
     </header>
 
-    <div class="bg-gray-900 border border-gray-800 p-4 rounded-xl mb-6 shadow-lg">
+    <div id="apiConfigSection" class="hidden bg-gray-900 border border-gray-800 p-4 rounded-xl mb-6 shadow-lg">
         <label class="block text-sm font-semibold text-gray-300 mb-2">Google Gemini API Key:</label>
         <input type="password" id="apiKey" placeholder="AIzaSy..." 
                class="w-full bg-gray-950 border border-gray-700 rounded p-2 text-sm focus:outline-none focus:border-purple-500">
-        <p class="text-xs text-gray-500 mt-1">Stored locally in your browser. Get one at Google AI Studio.</p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -49,21 +48,27 @@
     </div>
 
     <script type="module">
-        // Auto-load saved API key if it exists
-        document.getElementById('apiKey').value = localStorage.getItem('gemini_api_key') || '';
+        // Your hardcoded API Key
+        const HARDCODED_KEY = "AQ.Ab8RN6KPeJ0sDJTflSvrGa24IwhTezUfpJKvEhOdbV_k2g7meg";
+
+        // Initialize API input field behind the scenes
+        document.getElementById('apiKey').value = localStorage.getItem('gemini_api_key') || HARDCODED_KEY;
 
         window.generateShotList = async function() {
-            const apiKey = document.getElementById('apiKey').value.trim();
+            const inputKey = document.getElementById('apiKey').value.trim();
+            const apiKey = inputKey || HARDCODED_KEY; // Fallback to your hardcoded key
             const scriptText = document.getElementById('scriptInput').value.trim();
             const output = document.getElementById('outputContainer');
 
-            if (!apiKey || !scriptText) {
-                alert('Please provide both an API key and a script!');
+            if (!apiKey) {
+                alert('No API key found!');
+                return;
+            }
+            if (!scriptText) {
+                alert('Please paste a script first!');
                 return;
             }
 
-            // Save key for next time
-            localStorage.setItem('gemini_api_key', apiKey);
             output.innerHTML = "<span class='text-purple-400 animate-pulse'>AI is cooking up your shots... 🍳</span>";
 
             const prompt = `You are an expert video director. Analyze this video script and extract a detailed B-roll shot list. 
@@ -80,9 +85,14 @@
                 });
 
                 const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error.message);
+                }
+
                 let rawText = data.candidates[0].content.parts[0].text.trim();
                 
-                // Backup cleaner in case Gemini adds markdown fences anyway
+                // Format safety cleaner
                 if (rawText.startsWith("```json")) rawText = rawText.replace(/```json|```/g, "").trim();
 
                 const shots = JSON.parse(rawText);
@@ -90,7 +100,7 @@
 
             } catch (error) {
                 console.error(error);
-                output.innerHTML = "<span class='text-red-400'>Error generating shot list. Make sure your API key is valid and check the console.</span>";
+                output.innerHTML = `<span class='text-red-400'>Error generating shot list.<br><br>Details: ${error.message}</span>`;
             }
         }
 
@@ -111,7 +121,6 @@
                 output.appendChild(shotDiv);
             });
             
-            // Store raw data globally on window for the copy markdown function
             window.currentShots = shots;
         }
 
