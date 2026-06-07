@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎬 Vibe-Code Workflow Matrix Pro</title>
+    <title>🎬 Vibe-Code 3-Tier Production Matrix</title>
     <script src="https://cdn.jsdelivr.net/npm/@unocss/runtime/uno.global.js"></script>
     <style>
         body { background-color: #0b0f19; color: #f3f4f6; font-family: sans-serif; }
@@ -13,28 +13,18 @@
 
     <header class="mb-8 text-center">
         <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
-            🎬 Vibe-Code: Script to Asset Matrix Pro
+            🎬 Vibe-Code: Solo Production Matrix
         </h1>
-        <p class="text-gray-400 mt-2">Precision Blueprint — Fixed Repetition Loops & Calibrated Emotional Pacing</p>
+        <p class="text-gray-400 mt-2">Streamlined Pipeline — Script asset breakdown mapped directly to your deadline windows</p>
     </header>
 
-    <div class="bg-gray-900 border border-gray-800 p-4 rounded-xl mb-6 grid grid-cols-1 md:grid-cols-2 gap-4 shadow-lg">
-        <div>
-            <label class="block text-xs font-bold text-purple-400 uppercase tracking-wider mb-2">⏱️ Software Time Scope Investment</label>
-            <select id="timeScope" class="w-full bg-gray-950 border border-gray-700 rounded p-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500">
-                <option value="level1">⏱️ Level 1: Micro (Under 2 Hours - Templates, Fast Clips, Simple Code)</option>
-                <option value="level2" selected>⏳ Level 2: Short-Form (1–2 Days - Custom Assets, Sound Design, Edits)</option>
-                <option value="level3">📆 Level 3: Macro (1–3 Weeks - Full Season Archiving, Pro 3D/UI Grinds)</option>
-            </select>
-        </div>
-        <div>
-            <label class="block text-xs font-bold text-pink-400 uppercase tracking-wider mb-2">🧠 Technical Difficulty Level</label>
-            <select id="difficultyLevel" class="w-full bg-gray-950 border border-gray-700 rounded p-2 text-sm text-gray-200 focus:outline-none focus:border-pink-500">
-                <option value="beginner">🟢 Level 1: Beginner (Viewport basics, Unmodified templates, Simple cuts)</option>
-                <option value="intermediate" selected>🟡 Level 2: Intermediate (Keyframes, UV unwrapping, Custom layout tweaks)</option>
-                <option value="advanced">🔴 Level 3: Advanced (VFR Repair, Audio tracking sync, Complex UI assets)</option>
-            </select>
-        </div>
+    <div class="bg-gray-900 border border-gray-800 p-4 rounded-xl mb-6 shadow-lg">
+        <label class="block text-xs font-bold text-purple-400 uppercase tracking-wider mb-2">📅 Select Your Project Deadline & Effort Window</label>
+        <select id="productionTier" class="w-full bg-gray-950 border border-gray-700 rounded p-3 text-sm text-gray-200 focus:outline-none focus:border-purple-500 font-medium">
+            <option value="tier1" selected>🚀 Tier 1: Speed Run (1-2 Days Max) — Handheld shots, rapid templates, fast cuts, crisp clips</option>
+            <option value="tier2">⏳ Tier 2: Steady Grind (3-5 Days) — Asset modeling, audio beat syncing, custom CSS tweaks</option>
+            <option value="tier3">🏆 Tier 3: Full Week Masterpiece — AE dynamic links, custom node particles, heavy library nesting</option>
+        </select>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -43,7 +33,7 @@
             <label class="font-semibold text-gray-300 mb-2">📜 Paste Your Script</label>
             <textarea id="scriptInput" rows="12" placeholder="Paste your script here..." 
                       class="w-full h-full bg-gray-900 border border-gray-800 rounded-xl p-4 resize-none focus:outline-none focus:border-pink-500 shadow-inner text-gray-200"></textarea>
-            <button id="generateBtn" onclick="generateMatrixShots()" 
+            <button id="generateBtn" onclick="generateTieredBlueprint()" 
                     class="mt-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-3 px-6 rounded-xl shadow-md hover:opacity-90 transition duration-200">
                 ⚡ Generate Calibrated Blueprint
             </button>
@@ -61,94 +51,74 @@
     </div>
 
     <script>
-        // Completely overhauled dictionary mapping to eliminate repetition and match emotional pacing
-        const scriptThematicMap = [
+        // Production data structure tightly unified into your 3 direct time categories
+        const tierMatrixMap = [
             {
                 triggers: ['robot', 'mecha', 'monster', 'action', 'explosion', 'flashy', 'sequences'],
                 title: "💥 Punchy Action Sequence",
-                level1: "Use a premium desktop command utility like yt-dlp to download source clips cleanly in crisp 1080p/4K without pixelation compression.",
-                level2: "Import 4K unwatermarked source clips into Premiere Pro. Meticulously slice and align frame cuts right on the heavy transient spikes/beats of your background music audio timeline.",
-                level3: "Build an intensive local archive of full anime episodes. Map out structural pacing, fix variable frame rate audio drift, and composite multi-layered impact frames synchronously.",
-                beginner: "Workflow Target: Beginner. Focus entirely on timeline mechanics, using the Razor Tool (C) to eliminate awkward dead spaces between action shifts.",
-                intermediate: "Workflow Target: Intermediate. Use keyframed positional shifts and layer masks to emphasize heavy motion tracking fields around active subjects.",
-                advanced: "Workflow Target: Advanced. Establish a direct dynamic link with After Effects to handle high-fidelity frame compositing, screen shakes, and color maps."
+                tier1: "🚀 **Task:** Use `yt-dlp` to grab 1080p source clips cleanly. Drop into Premiere Pro and execute raw timeline slicing using the Razor Tool (C) to cut out dead spaces fast.",
+                tier2: "⏳ **Task:** Source high-bitrate unwatermarked gameplay/trailers. Precision-cut and lock frames directly onto heavy transient beats of your music track; add impact frame flashes.",
+                tier3: "🏆 **Task:** Build a massive local episode archive. Correct variable frame rate (VFR) audio drift, establish an After Effects dynamic link, and design custom composite screen shakes."
             },
             {
                 triggers: ['model kit', 'plastic', 'shelf', 'toy', 'figure', 'kits'],
                 title: "🤖 3D Mecha Showcase Asset",
-                level1: "Open a pre-designed Blender asset turntable template. Drop text labels detailing your review topic into the primary workspace layer.",
-                level2: "Head to Sketchfab or TurboSquid to pull a free, high-quality 3D model of a robot, mecha, or vintage kit box. Drop it directly into your Blender file scene template.",
-                level3: "Model an original low-poly mecha chassis shell manually in Blender. Map customized procedural nodes across shader coordinates to emphasize retro plastic surfaces.",
-                beginner: "Workflow Target: Beginner. Navigate the main viewport axis smoothly, organizing your figure meshes cleanly without losing camera alignment parameters.",
-                intermediate: "Workflow Target: Intermediate. Animate your camera to slowly zoom directly into the mecha figure's face or visor eye to construct cinematic narrative tension.",
-                advanced: "Workflow Target: Advanced. Build a fully custom-lit digital showroom workspace in Cycles, using manual UV unwrapping and localized spot lighting."
+                tier1: "🚀 **Task:** Open an existing Blender turntable project file. Swap background layer colors and viewport focus settings without spending hours modifying layout meshes.",
+                tier2: "⏳ **Task:** Download a clean, free mecha or kit box asset from Sketchfab/TurboSquid. Drop it into Blender and animate a slow, cinematic camera tracking zoom straight into the visor eye.",
+                tier3: "🏆 **Task:** Model custom low-poly hard surface elements from scratch in Blender. Unwrap UV channels manually, script procedural material node shades, and execute a full Cycles ray-traced render loop."
             },
             {
                 triggers: ['quiet', 'silence', 'elevator', 'isolation', 'agonizing', 'stretches'],
                 title: "⏳ Minimalist Structural Timing Graphic",
-                level1: "Write a short custom HTML animation using an AI script to generate a simple, clean, minimalist clock layout centering a dark web browser view.",
-                level2: "Take your minimalist timer code, open the text editor source, and use specific JavaScript intervals to keep a stark digital ticking layout active on a pitch-black window backdrop.",
-                level3: "Engineer an interactive HTML canvas time engine. Script custom frame ticks that slowly distort, export it, and record the viewport to use as a high-concept thematic asset layer.",
-                beginner: "Workflow Target: Beginner. Capture the localized .html browser file execution using a clean, uncompressed desktop system screen-recorder layer.",
-                intermediate: "Workflow Target: Intermediate. Inject manual CSS animation keyframes directly into the file layout to give the timing text a deliberate, stylized, slow pulse effect.",
-                advanced: "Workflow Target: Advanced. Weave external library nodes like GSAP or Three.js inside the logic to manipulate complex vector timing layers manually."
+                tier1: "🚀 **Task:** Prompt an AI layout engine for a clean, minimalist web clock script. Save it, view it inside Chrome, and grab the animation instantly using a desktop system screen recorder.",
+                tier2: "⏳ **Task:** Open your AI HTML script source. Manually inject CSS animation keyframes to code a slow, moody fading pulse effect onto the central digital ticking timer layout.",
+                tier3: "🏆 **Task:** Engineer an advanced interactive HTML canvas time engine. Weave GSAP library script parameters into your code, debug loop threads, and capture a highly stylized retro timing graphic."
             },
             {
                 triggers: ['cityscapes', 'empty cityscapes', 'empty streets', 'ticking clock'],
                 title: "🌆 Cinematic Landscape B-Roll",
-                level1: "Source high-fidelity, uncompressed 1080p B-roll assets displaying empty city environments, power lines against sunsets, or train lines.",
-                level2: "Track down high-bitrate raw anime clips featuring moody, deserted metropolitan streets or rain falling on puddles to isolate into background plates.",
-                level3: "Build a massive personal b-roll vault of urban environments. Batch-convert large source containers, catalog them by weather/time, and color grade them to a uniform palette.",
-                beginner: "Workflow Target: Beginner. Arrange long, unedited structural landscape shots back-to-back, allowing the scene to breathe on screen without fast cuts.",
-                intermediate: "Workflow Target: Intermediate. Layer custom sound design components (like low ambient city drones, rain hums, or wind gusts) under the landscape timeline tracks.",
-                advanced: "Workflow Target: Advanced. Combine static b-roll textures using subtle track matte layers and luma masking to create stylized atmospheric haze overlays."
+                tier1: "🚀 **Task:** Quickly harvest uncompressed landscape shots (sunsets, power lines, silent buildings). Place long static blocks on the timeline to let the review edit breathe naturally.",
+                tier2: "⏳ **Task:** Track down raw anime plates displaying deserted urban zones or rain hitting puddles. Construct ambient audio designs (distant city drones, low wind gusts) beneath the sequence.",
+                tier3: "🏆 **Task:** Compile a specialized local B-roll folder vault. Apply custom luma masks, track matte layers, and localized color grading adjustments to unify the environmental atmosphere look perfectly."
             },
             {
                 triggers: ['broken', 'teenager', 'reflection', 'window', 'rain', 'staring'],
                 title: "🪞 Moody Mirror Reflection Matte",
-                level1: "Isolate a raw scene clip of a character under a low-light setup. Drop it on your primary layout line, slowing the play speed down to 80%.",
-                level2: "Apply the 'Mirror' effect inside Premiere Pro, or create a dual-track split screen layer. Use a dark, low-opacity color wash overlay to forge a literal reflection texture on glass.",
-                level3: "Construct an advanced composite timeline stack: cross-dissolve a macro shot of rain-slicked glass bokeh elements right over a character profile mask layer.",
-                beginner: "Workflow Target: Beginner. Keep the motion stationary. Let the character sit still in frame while using baseline export settings.",
-                intermediate: "Workflow Target: Intermediate. Manually adjust structural opacity values and track paths over the glass to perfectly blend the facial lines into the reflection.",
-                advanced: "Workflow Target: Advanced. Link to After Effects to use precise track points, anchoring realistic glare layers over the shifting angles of the character's face."
+                tier1: "🚀 **Task:** Pick a low-light character clip track. Isolate a single performance profile block on your layout screen and reduce clip execution speed smoothly down to 80%.",
+                tier2: "⏳ **Task:** Apply the 'Mirror' filter in Premiere Pro or build a dual-track split screen layer. Stack a dark, low-opacity color wash over the track to map a realistic reflection glare onto glass.",
+                tier3: "🏆 **Task:** Open After Effects. Establish multi-point motion track pins to seamlessly lock a complex rain-slicked glass bokeh overlay plate over the structural angle shifts of the character's face."
             },
             {
                 triggers: ['jazz', 'track', 'music', 'softly', 'melancholic', 'human', 'breathe'],
                 title: "💨 Floating Abstract Atmosphere Layout",
-                level1: "Prompt your local HTML generator for a simple graphic display containing clean, minimalist dust motes moving slowly across a dark gray backdrop.",
-                level2: "Open up the HTML code file manually and update the CSS properties, swapping out the chaotic Matrix text for soft, white abstract particle circles floating gently upward.",
-                level3: "Design an intensive custom JavaScript particle node collection via an HTML canvas, managing coordinates to create a slow-moving cloud texture.",
-                beginner: "Workflow Target: Beginner. Screen-record the browser viewport window frame cleanly, dropping it right over your music audio sequence tracks.",
-                intermediate: "Workflow Target: Intermediate. Manually inject a slow, fading opacity cycle into your canvas CSS script so the particles naturally bloom and dissolve on screen.",
-                advanced: "Workflow Target: Advanced. Anchor particle velocity parameters to coordinate directly with external script controllers, crafting an evolving abstract backdrop."
+                tier1: "🚀 **Task:** Ask AI to write a web canvas script featuring small gray circles. Run the .html file locally and screen-capture the motion framework instantly to match the low-key review atmosphere.",
+                tier2: "⏳ **Task:** Open the raw canvas HTML properties and swap out chaotic code elements for white abstract particle circles moving slowly upward; adjust alpha channels to let them smoothly dissolve.",
+                tier3: "🏆 **Task:** Program a detailed three-dimensional vector particle field script via canvas math modules. Map velocity shifts to coordinate organically with background audio transients for a premium backdrop track."
             }
         ];
 
-        window.generateMatrixShots = function() {
+        window.generateTieredBlueprint = function() {
             try {
                 const scriptInputEl = document.getElementById('scriptInput');
                 const outputEl = document.getElementById('outputContainer');
-                const scopeSelect = document.getElementById('timeScope');
-                const difficultySelect = document.getElementById('difficultyLevel');
+                const tierSelect = document.getElementById('productionTier');
 
-                if (!scriptInputEl || !outputEl || !scopeSelect || !difficultySelect) {
-                    alert("UI loading issue, please reload.");
+                if (!scriptInputEl || !outputEl || !tierSelect) {
+                    alert("System layout sync error, please reload page.");
                     return;
                 }
 
                 const scriptText = scriptInputEl.value.trim();
-                const scope = scopeSelect.value;
-                const difficulty = difficultySelect.value;
+                const currentTier = tierSelect.value;
 
                 if (!scriptText) {
                     alert('Please paste your video script first!');
                     return;
                 }
 
-                outputEl.innerHTML = "<span class='text-purple-400 animate-pulse'>Re-indexing your editing timeline parameters... ⚙️</span>";
+                outputEl.innerHTML = "<span class='text-purple-400 animate-pulse'>Calibrating production metrics for your target deadline... ⚙️</span>";
 
-                // Standardize splitting sequences cleanly to isolate logical production blocks
+                // Sentences extraction logic block
                 const sentences = scriptText.split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 10);
                 let processingBlocks = [];
 
@@ -165,47 +135,37 @@
 
                 processingBlocks.forEach((block) => {
                     const lowerBlock = block.toLowerCase();
-                    let bestThematicMatch = null;
-                    let topMatchScore = 0;
+                    let matchedData = null;
+                    let topScore = 0;
 
-                    scriptThematicMap.forEach(item => {
-                        let currentScore = 0;
+                    tierMatrixMap.forEach(item => {
+                        let score = 0;
                         item.triggers.forEach(word => {
-                            if (lowerBlock.includes(word)) currentScore++;
+                            if (lowerBlock.includes(word)) score++;
                         });
-                        if (currentScore > topMatchScore) {
-                            topMatchScore = currentScore;
-                            bestThematicMatch = item;
+                        if (score > topScore) {
+                            topScore = score;
+                            matchedData = item;
                         }
                     });
 
-                    let assetTitle = "🎬 General Production Track";
-                    let taskBreakdown = "";
-                    let stepWarning = "";
+                    let assetTitle = "🎬 General Narrative Segment";
+                    let finalInstruction = "";
 
-                    if (bestThematicMatch && topMatchScore > 0) {
-                        assetTitle = bestThematicMatch.title;
-                        taskBreakdown = bestThematicMatch[scope];
-                        stepWarning = bestThematicMatch[difficulty];
+                    if (matchedData && topScore > 0) {
+                        assetTitle = matchedData.title;
+                        finalInstruction = matchedData[currentTier];
                     } else {
-                        // Standardized global fallbacks to protect layout button integrity
-                        if (scope === 'level1') {
-                            assetTitle = "⏱️ Micro Action Layout";
-                            taskBreakdown = "Source fast uncompressed web clips using desktop download hooks. Slice sequences tightly inside your primary timeline track.";
-                        } else if (scope === 'level2') {
-                            assetTitle = "⏳ Short-Form Workflow Grid";
-                            taskBreakdown = "Execute intermediate clip cutting loops, syncing audio sound design hits precisely to physical movement shifts on your preview window frame.";
+                        // Fully integrated context fallback architecture matching selected timeline keys
+                        if (currentTier === 'tier1') {
+                            assetTitle = "🚀 Fast-Track Component";
+                            finalInstruction = "🚀 **Task:** Use rapid asset harvesting via online tool streams. Keep transitions clean, relying on baseline scaling choices and simple text layouts to close the task today.";
+                        } else if (currentTier === 'tier2') {
+                            assetTitle = "⏳ Intermediate Workflow Step";
+                            finalInstruction = "⏳ **Task:** Apply position scale tracking keyframes to craft custom visual pacing. Integrate deliberate background audio sound shifts (risers/whooshes) to clean up layout flow.";
                         } else {
-                            assetTitle = "📆 Macro Timeline Strategy";
-                            taskBreakdown = "Orchestrate structural multi-cam nests and fix file frame anomalies before compiling layers inside major production software.";
-                        }
-
-                        if (difficulty === 'beginner') {
-                            stepWarning = "Workflow Target: Beginner. Keep track operations simple, relying on layout presets and razor cuts.";
-                        } else if (difficulty === 'intermediate') {
-                            stepWarning = "Workflow Target: Intermediate. Manage positional timeline tracks with custom keyframe paths to build deliberate visual momentum.";
-                        } else {
-                            stepWarning = "Workflow Target: Advanced. Troubleshoot broken script threads or structural asset tracking issues inside high-end composition nodes.";
+                            assetTitle = "🏆 Masterpiece Development Grid";
+                            finalInstruction = "🏆 **Task:** Implement complex multi-layered timeline tracking arrangements. Sync heavy nest structures, correct clip anomalies, and verify output encoding profiles to build maximum depth.";
                         }
                     }
 
@@ -214,21 +174,20 @@
                     finalBlueprint.push({
                         title: assetTitle,
                         line: displayTruncatedLine,
-                        task: taskBreakdown,
-                        warning: stepWarning
+                        task: finalInstruction
                     });
                 });
 
-                renderMatrixUI(finalBlueprint);
+                renderBlueprintUI(finalBlueprint);
 
-            } catch (globalError) {
-                console.error("System Matrix Exception Handler triggered:", globalError);
+            } catch (err) {
+                console.error("Critical Matrix runtime intercept:", err);
                 document.getElementById('outputContainer').innerHTML = 
-                    `<span class='text-red-400'>Error executing parameters: ${globalError.message}. Please click generate again.</span>`;
+                    `<span class='text-red-400'>Error executing tier profiles: ${err.message}. Try hitting generate again.</span>`;
             }
         }
 
-        function renderMatrixUI(blueprint) {
+        function renderBlueprintUI(blueprint) {
             const outputEl = document.getElementById('outputContainer');
             if (!outputEl) return;
             
@@ -245,10 +204,7 @@
                     <p class="text-xs text-gray-500 italic mb-3">Script Beat: "${item.line}"</p>
                     <div class="flex items-start gap-3">
                         <input type="checkbox" class="mt-1 accent-pink-500 w-4 h-4 rounded">
-                        <div class="flex-1">
-                            <p class="text-gray-200 font-medium text-sm leading-relaxed">${item.task}</p>
-                            <p class="text-xs font-mono text-pink-400 mt-2 bg-pink-950/30 p-1.5 px-2.5 rounded border border-pink-900/30">💡 ${item.warning}</p>
-                        </div>
+                        <p class="text-gray-200 text-sm leading-relaxed flex-1">${item.task}</p>
                     </div>
                 `;
                 outputEl.appendChild(stepBlock);
@@ -259,12 +215,11 @@
 
         window.copyMarkdown = function() {
             if (!window.currentBlueprint) return alert("Nothing to copy yet!");
-            let md = "# 🎬 Production Blueprint & Asset Guide\n\n";
+            let md = "# 🎬 Your Customized Solo Production Blueprint\n\n";
             window.currentBlueprint.forEach((item, i) => {
                 md += `### Asset ${i+1}: ${item.title}\n`;
-                md += `- **Script Focus**: "${item.line}"\n`;
-                md += `- [ ] **Task Plan**: ${item.task}\n`;
-                md += `- **Technical Requirements**: ${item.warning}\n\n`;
+                md += `- **Script Beat Focus**: "${item.line}"\n`;
+                md += `- [ ] ${item.task}\n\n`;
             });
             navigator.clipboard.writeText(md);
             alert("Customized production blueprint markdown copied to clipboard!");
