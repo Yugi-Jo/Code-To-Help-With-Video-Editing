@@ -61,7 +61,7 @@
     </div>
 
     <script>
-        // Core thematic matrix dictionary mapped to your custom scope filters
+        // Core thematic matrix dictionary with perfectly matched structural keys
         const scriptThematicMap = [
             {
                 triggers: ['robot', 'mecha', 'monster', 'action', 'explosion', 'flashy'],
@@ -84,4 +84,91 @@
                 advanced: "Workflow Tier: Advanced. Deploy complex node systems via Geometry Nodes, coordinate photo-realistic Cycles ray-tracing, and optimize tile memory management."
             },
             {
-                triggers:
+                triggers: ['quiet', 'silence', 'elevator', 'isolation', 'empty', 'existential', 'cityscapes', 'clock', 'ticking', 'broken', 'teenager', 'reflection', 'window', 'rain', 'melancholic', 'jazz', 'track', 'music', 'softly'],
+                title: "⏳ Moody Textures & Abstract Timing Graphic",
+                level1: "Prompt an AI tool for a clean matrix background script, save it locally, run it straight inside Chrome, and capture the output using basic screen-recording apps.",
+                level2: "Take raw AI-generated HTML engine scripts, open the source file, and manually modify the CSS layouts and JavaScript math structures to patch messy visual bugs into a functional overlay.",
+                level3: "Prompt AI engines for a multi-layered complex interactive framework. Stitch heavy HTML canvas arrays together to record an original visual directory of custom glitch interfaces.",
+                beginner: "Workflow Tier: Beginner. Drop simple text prompts into AI interfaces, copy raw blocks, and run local .html file previews.",
+                intermediate: "Workflow Tier: Intermediate. Ingress custom CSS keyframe animations or direct canvas rendering code to turn janky bugs into deliberate aesthetic expressions.",
+                advanced: "Workflow Tier: Advanced. Coax AI scripts into constructing complex framework modules like Three.js or GreenSock (GSAP), debugging deep thread runtime loops manually."
+            }
+        ];
+
+        window.generateMatrixShots = function() {
+            const scriptInputEl = document.getElementById('scriptInput');
+            const outputEl = document.getElementById('outputContainer');
+            const scopeSelect = document.getElementById('timeScope');
+            const difficultySelect = document.getElementById('difficultyLevel');
+
+            if (!scriptInputEl || !outputEl || !scopeSelect || !difficultySelect) {
+                console.error("Missing UI DOM elements!");
+                return;
+            }
+
+            const scriptText = scriptInputEl.value.trim();
+            const scope = scopeSelect.value;
+            const difficulty = difficultySelect.value;
+
+            if (!scriptText) {
+                alert('Please paste a script first!');
+                return;
+            }
+
+            outputEl.innerHTML = "<span class='text-purple-400 animate-pulse'>Re-indexing your editing timeline parameters... ⚙️</span>";
+
+            setTimeout(() => {
+                const sentences = scriptText.split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 15);
+                let processingBlocks = [];
+
+                for (let i = 0; i < sentences.length; i += 2) {
+                    const block = sentences.slice(i, i + 2).join('. ') + '.';
+                    if (block.length > 20) processingBlocks.push(block);
+                }
+
+                let finalBlueprint = [];
+
+                processingBlocks.forEach((block) => {
+                    const lowerBlock = block.toLowerCase();
+                    let bestThematicMatch = null;
+                    let topMatchScore = 0;
+
+                    scriptThematicMap.forEach(item => {
+                        let currentScore = 0;
+                        item.triggers.forEach(word => {
+                            if (lowerBlock.includes(word)) currentScore++;
+                        });
+                        if (currentScore > topMatchScore) {
+                            topMatchScore = currentScore;
+                            bestThematicMatch = item;
+                        }
+                    });
+
+                    let assetTitle = "🎬 General Narrative Segment";
+                    let taskBreakdown = "";
+                    let stepWarning = "";
+
+                    if (bestThematicMatch && topMatchScore > 0) {
+                        assetTitle = bestThematicMatch.title;
+                        taskBreakdown = bestThematicMatch[scope];
+                        stepWarning = bestThematicMatch[difficulty];
+                    } else {
+                        // Fallback logic cleanly matching standardized dropdown key configurations
+                        if (scope === 'level1') {
+                            taskBreakdown = "Fast clip search on web tools. Simple Razor cutting timeline adjustments in Premiere Pro with basic text assets.";
+                        } else if (scope === 'level2') {
+                            taskBreakdown = "Intermediate asset processing: Build custom sound overlays (risers, whooshes) and design structural layout animations using position tracking keyframes.";
+                        } else {
+                            taskBreakdown = "Advanced environment orchestration: Link heavy composition sequences to processing tools, coordinating high-bitrate long-form assets.";
+                        }
+
+                        if (difficulty === 'beginner') {
+                            stepWarning = "Beginner Track: Rely on timeline defaults and drag-and-drop actions.";
+                        } else if (difficulty === 'intermediate') {
+                            stepWarning = "Intermediate Track: Clean multi-track asset arrangement using manual scale/position values.";
+                        } else {
+                            stepWarning = "Advanced Track: Manual adjustment of asset pipelines, handling file sync failures or memory allocation limits.";
+                        }
+                    }
+
+                    let displayTruncatedLine = block.length > 85 ? block.substring
