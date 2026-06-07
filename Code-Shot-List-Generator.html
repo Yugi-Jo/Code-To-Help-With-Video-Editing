@@ -3,35 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎬 Vibe-Code Shot List Generator</title>
+    <title>🎬 Vibe-Code Workflow Matrix</title>
     <script src="https://cdn.jsdelivr.net/npm/@unocss/runtime"></script>
     <style>
         body { background-color: #0b0f19; color: #f3f4f6; font-family: sans-serif; }
     </style>
 </head>
-<body class="p-6 max-w-5xl mx-auto">
+<body class="p-6 max-w-6xl mx-auto">
 
     <header class="mb-8 text-center">
         <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
-            🎬 Vibe-Code: Script to B-Roll
+            🎬 Vibe-Code: Script to Asset Matrix
         </h1>
-        <p class="text-gray-400 mt-2">Dynamic Production Engine — Tailored to your time & workflow speed</p>
+        <p class="text-gray-400 mt-2">Production Blueprint calibrated by Time Scope & Technical Learning Curves</p>
     </header>
 
     <div class="bg-gray-900 border border-gray-800 p-4 rounded-xl mb-6 grid grid-cols-1 md:grid-cols-2 gap-4 shadow-lg">
         <div>
-            <label class="block text-xs font-bold text-purple-400 uppercase tracking-wider mb-2">⏱️ Production Time Frame</label>
-            <select id="timeFrame" class="w-full bg-gray-950 border border-gray-700 rounded p-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500">
-                <option value="fast">Run & Gun (Under 2 hours - Simple, fast, no tripod setups)</option>
-                <option value="balanced" selected>Standard (1-2 Days - Good pacing, thoughtful setups)</option>
-                <option value="high_effort">Cinematic Masterpiece (Multi-day - Deep lighting, heavy camera moves)</option>
+            <label class="block text-xs font-bold text-purple-400 uppercase tracking-wider mb-2">⏱️ Software Time Scope Investment</label>
+            <select id="timeScope" class="w-full bg-gray-950 border border-gray-700 rounded p-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500">
+                <option value="level1">⏱️ Level 1: Micro (Under 2 Hours - Templates, Web Tools, Basic LUT Cuts)</option>
+                <option value="level2" selected>⏳ Level 2: Short-Form (1–2 Days - Custom Assets, Sound Design, Edits)</option>
+                <option value="level3">📆 Level 3: Macro (1–3 Weeks - Massive Library Builds, Complex 3D/UI Grinds)</option>
             </select>
         </div>
         <div>
-            <label class="block text-xs font-bold text-pink-400 uppercase tracking-wider mb-2">🧠 Production Skill Level</label>
-            <select id="skillLevel" class="w-full bg-gray-950 border border-gray-700 rounded p-2 text-sm text-gray-200 focus:outline-none focus:border-pink-500">
-                <option value="beginner">Solo Beginner (Smartphone / Basic Camera, natural light, zero crew)</option>
-                <option value="advanced">Experienced / Pro (Advanced camera settings, multi-point lighting)</option>
+            <label class="block text-xs font-bold text-pink-400 uppercase tracking-wider mb-2">🧠 Technical Difficulty Level</label>
+            <select id="difficultyLevel" class="w-full bg-gray-950 border border-gray-700 rounded p-2 text-sm text-gray-200 focus:outline-none focus:border-pink-500">
+                <option value="beginner">🟢 Level 1: Beginner (Importing, Viewport basics, Basic AI copies)</option>
+                <option value="intermediate" selected>🟡 Level 2: Intermediate (Keyframes, Unwrapping, Tweaking code)</option>
+                <option value="advanced">🔴 Level 3: Advanced (VFR Fixes, Geometry Nodes, Three.js loops)</option>
             </select>
         </div>
     </div>
@@ -42,177 +43,45 @@
             <label class="font-semibold text-gray-300 mb-2">📜 Paste Your Script</label>
             <textarea id="scriptInput" rows="12" placeholder="Paste your script here..." 
                       class="w-full h-full bg-gray-900 border border-gray-800 rounded-xl p-4 resize-none focus:outline-none focus:border-pink-500 shadow-inner text-gray-200"></textarea>
-            <button id="generateBtn" onclick="generateProductionShots()" 
+            <button id="generateBtn" onclick="generateMatrixShots()" 
                     class="mt-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-3 px-6 rounded-xl shadow-md hover:opacity-90 transition duration-200">
-                ⚡ Generate Tailored Shot List
+                ⚡ Generate Calibrated Blueprint
             </button>
         </div>
 
         <div class="flex flex-col">
             <div class="flex justify-between items-center mb-2">
-                <label class="font-semibold text-gray-300">📋 Smart Shot List Checklist</label>
+                <label class="font-semibold text-gray-300">📋 Actionable Asset Blueprint</label>
                 <button onclick="copyMarkdown()" class="text-xs text-purple-400 hover:underline">Copy Markdown</button>
             </div>
             <div id="outputContainer" class="bg-gray-900 border border-gray-800 rounded-xl p-4 h-96 overflow-y-auto shadow-inner text-gray-400 text-sm">
-                Your customized, time-optimized B-Roll suggestions will appear here...
+                Your customized pipeline breakdown based on software execution metrics will appear here...
             </div>
         </div>
     </div>
 
     <script>
-        // Dynamic Matrix mapping base concepts to complexity tiers
-        const productionMatrix = [
+        // Core thematic matrix dictionary mapped to your custom scope filters
+        const scriptThematicMap = [
             {
                 triggers: ['robot', 'mecha', 'monster', 'action', 'explosion', 'flashy'],
-                fast: "Quick screen-recording/capture or extreme close-up pan over a robot image on your monitor or phone with a fast camera shake.",
-                balanced: "A high-contrast, fast-cutting montage of vintage anime action clips. Smooth editing cuts syncing up with the script pacing.",
-                high_effort: "A stylized macro track using a slider across a physical model kit with practical background smoke effects and flashing colored LED lights to simulate combat."
+                title: "💥 Dynamic Action Beat",
+                level1: "Quick YouTube rip using online web tools. Slice a 10s viral clip in Premiere Pro, slap a standard action LUT on it, and export.",
+                level2: "Sift through full high-quality battle gameplay or trailer streams. Cut a sequence in Premiere Pro with dynamic jump cuts synced tightly to asset audio risers.",
+                level3: "Build a massive local archive of raw anime series/movies. Handle MKV-to-MP4 formatting, correct VFR audio drift errors, and index scenes for a multi-track composite sequence.",
+                beginner: "Workflow Tier: Beginner. Use raw cuts and baseline timeline presets.",
+                intermediate: "Workflow Tier: Intermediate. Utilize manual masking and multitrack keyframes to enhance asset positioning.",
+                advanced: "Workflow Tier: Advanced. Execute dynamic linking to After Effects for complex compositing, dealing with offline media or performance optimization crashes."
             },
             {
                 triggers: ['model kit', 'plastic', 'shelf', 'toy', 'figure', 'kid', 'childhood'],
-                fast: "Simple eye-level handheld phone pan looking across your toy/model collection shelf under room lighting.",
-                balanced: "Macro tracking shot pulling focus smoothly from one figure to another, using a tripod or gimbal under soft overhead nostalgia lighting.",
-                high_effort: "A deep depth-of-field probe lens push through the collection space, utilizing a multi-point studio light setup and manual color grading to create an elite cinematic showcase."
+                title: "🤖 3D Objects & Toys Collectible Showcase",
+                level1: "Open a pre-made Blender asset display scene file template. Swap the baseline text mesh or background tone variables, and render out a basic 5-second rotation file loop.",
+                level2: "Model a stylized low-poly figure or model shelf element from scratch in Blender. Map basic procedural material nodes onto the geometry and animate a smooth turntable spinning array.",
+                level3: "Construct a complete multi-layered 3D room environment in Blender. Setup complex character rigging pipelines, custom weight painting maps, and simulated particle dust volumes.",
+                beginner: "Workflow Tier: Beginner. Move primitive shapes around the workspace without getting lost in the viewport.",
+                intermediate: "Workflow Tier: Intermediate. Handle manual UV unwrapping maps, bake textures, and refine camera trajectories using the Graph Editor interface.",
+                advanced: "Workflow Tier: Advanced. Deploy complex node systems via Geometry Nodes, coordinate photo-realistic Cycles ray-tracing, and optimize tile memory management."
             },
             {
-                triggers: ['perspective', 'changes', 'rewatch', 'week', 'differently', 'time'],
-                fast: "A fast overhead point-of-view shot of your hands throwing an old notebook or media case down onto a desk.",
-                balanced: "A clean extreme close-up of a tape deck loading, or a stylized desktop interface cleanly scrolling through a library of retro video files.",
-                high_effort: "A complex match-cut transition shifting from a dirty old CRT television screen displaying the show to a modern 4K production editing monitor."
-            },
-            {
-                triggers: ['quiet', 'silence', 'elevator', 'isolation', 'empty', 'existential'],
-                fast: "A simple static shot looking down at an empty corner of your room, framing a clean negative space.",
-                balanced: "A symmetrical, slow push-in wide shot of an empty corridor or architectural space, leaning heavily into clean geometry and still frames.",
-                high_effort: "A highly stylized, color-blocked composition of an empty structural element or architecture, using heavy shadows and dramatic low-key rim lighting to capture profound isolation."
-            },
-            {
-                triggers: ['cityscapes', 'clock', 'ticking', 'masterpiece'],
-                fast: "A quick panning shot out of your nearest window towards the sky, or a screen capture of a stylized clock graphics overlay.",
-                balanced: "A clean, stabilized time-lapse or slow pan of an urban landscape or clock face during golden hour.",
-                high_effort: "A complex multi-hour dusk-to-night urban time-lapse, layered dynamically behind a spinning, animated clock dial asset key-framed directly into the final timeline frame."
-            },
-            {
-                triggers: ['broken', 'teenager', 'reflection', 'window', 'rain', 'melancholic'],
-                fast: "A simple handheld view out of a glass window on a dark or overcast day.",
-                balanced: "A moody medium shot looking through a rain-slicked window pane with bright neon lights softly blurred out into background bokeh reflections.",
-                high_effort: "A multi-layered shot looking through glass artificially sprayed with water droplets. A subject sits in partial profile silhouette, backlit by an amber accent light while a camera moves across on a mechanical slider."
-            },
-            {
-                triggers: ['jazz', 'track', 'music', 'softly', 'background', 'breathe', 'human'],
-                fast: "A basic shot of audio headphones resting on your keyboard, or streaming waveform software visible on screen.",
-                balanced: "A slow, graceful panning shot over a record turning on a vinyl turntable under a single warm, moody desk lamp.",
-                high_effort: "An ultra-shallow depth of field close-up panning across a spinning vintage vinyl record groove, styled with rich color grading and custom studio backlighting."
-            }
-        ];
-
-        // Consolidated and fully globally accessible generator engine
-        window.generateProductionShots = function() {
-            const scriptText = document.getElementById('scriptInput').value.trim();
-            const output = document.getElementById('outputContainer');
-            const selectedTime = document.getElementById('timeFrame').value;
-            const selectedSkill = document.getElementById('skillLevel').value;
-
-            if (!scriptText) {
-                alert('Please paste a script first!');
-                return;
-            }
-
-            output.innerHTML = "<span class='text-purple-400 animate-pulse'>Analyzing production requirements and gear configurations... ⏱️</span>";
-
-            setTimeout(() => {
-                const blocks = scriptText.split('\n\n').filter(c => c.trim().length > 10);
-                let processingBlocks = [];
-
-                if (blocks.length <= 1) {
-                    const sentences = scriptText.split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 5);
-                    for (let i = 0; i < sentences.length; i += 2) {
-                        const compiled = sentences.slice(i, i + 2).join('. ') + '.';
-                        if (compiled.length > 15) processingBlocks.push(compiled);
-                    }
-                } else {
-                    processingBlocks = blocks;
-                }
-
-                let generatedList = [];
-
-                processingBlocks.forEach((block, index) => {
-                    const lowerBlock = block.toLowerCase();
-                    let matchedConcept = null;
-                    let topScore = 0;
-
-                    productionMatrix.forEach(item => {
-                        let score = 0;
-                        item.triggers.forEach(word => {
-                            if (lowerBlock.includes(word)) score++;
-                        });
-                        if (score > topScore) {
-                            topScore = score;
-                            matchedConcept = item;
-                        }
-                    });
-
-                    let calculatedShot = "";
-                    
-                    if (matchedConcept && topScore > 0) {
-                        calculatedShot = matchedConcept[selectedTime];
-                    } else {
-                        if (selectedTime === 'fast') {
-                            calculatedShot = "Quick handheld capture angle focusing on immediate desktop items to keep editing fast.";
-                        } else if (selectedTime === 'balanced') {
-                            calculatedShot = "A stabilized tripod medium detail shot or slow tracking pan focusing on adjacent object profiles.";
-                        } else {
-                            calculatedShot = "A highly designed camera movement with manual racking focus tracking smoothly across foreground objects.";
-                        }
-                    }
-
-                    // Apply layout optimizations if beginner parameters are set
-                    if (selectedSkill === 'beginner') {
-                        calculatedShot = calculatedShot.replace(/slider|lens probe|gimbal|studio light/g, 'steady handheld shot')
-                                                       .replace(/multi-point studio light setup/g, 'bright natural window lighting');
-                    }
-
-                    let UI_Line = block.length > 90 ? block.substring(0, 87) + "..." : block;
-
-                    generatedList.push({
-                        line: UI_Line,
-                        shot: calculatedShot
-                    });
-                });
-
-                renderShots(generatedList);
-            }, 300);
-        }
-
-        function renderShots(shots) {
-            const output = document.getElementById('outputContainer');
-            output.innerHTML = "";
-            
-            shots.forEach((item, index) => {
-                const shotDiv = document.createElement('div');
-                shotDiv.className = "mb-4 pb-3 border-b border-gray-800 last:border-0";
-                shotDiv.innerHTML = `
-                    <p class="text-xs text-gray-400 italic mb-1">Script Beat: "${item.line}"</p>
-                    <div class="flex items-start gap-2">
-                        <input type="checkbox" class="mt-1 accent-purple-500">
-                        <span class="text-gray-200 font-medium"><strong>Shot ${index+1}:</strong> ${item.shot}</span>
-                    </div>
-                `;
-                output.appendChild(shotDiv);
-            });
-            
-            window.currentShots = shots;
-        }
-
-        window.copyMarkdown = function() {
-            if (!window.currentShots) return alert("Nothing to copy yet!");
-            let md = "## 🎬 Production Tailored Shot List\n\n";
-            window.currentShots.forEach((item, i) => {
-                md += `- [ ] **Shot ${i+1}** (Beat: "${item.line}"): ${item.shot}\n`;
-            });
-            navigator.clipboard.writeText(md);
-            alert("Markdown checklist copied to clipboard!");
-        }
-    </script>
-</body>
-</html>
+                triggers:
