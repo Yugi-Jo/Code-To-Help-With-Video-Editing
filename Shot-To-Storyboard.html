@@ -1,134 +1,703 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎬 AI Storyboard Studio</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: #0b0f19; color: #f3f4f6; font-family: system-ui, sans-serif; padding: 30px; max-width: 1100px; margin: 0 auto; }
-        header { text-align: center; margin-bottom: 30px; }
-        h1 { color: #a855f7; margin-bottom: 5px; }
-        .config-box { background: #111827; padding: 20px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #1f2937; }
-        label { display: block; font-size: 12px; color: #a855f7; font-weight: bold; margin-bottom: 8px; text-transform: uppercase; }
-        input, textarea { width: 100%; background: #030712; border: 1px solid #374151; color: white; padding: 12px; border-radius: 6px; font-size: 14px; margin-bottom: 15px; outline: none; }
-        input:focus, textarea:focus { border-color: #a855f7; }
-        textarea { height: 180px; resize: none; }
-        button { background: #a855f7; color: white; border: none; padding: 14px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; font-size: 14px; }
-        button:hover { opacity: 0.9; }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
-        #outputContainer { background: #111827; padding: 20px; border-radius: 8px; min-height: 150px; border: 1px solid #1f2937; color: #9ca3af; margin-top: 10px; }
-        .storyboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-        .panel-card { background: #030712; border: 1px solid #1f2937; border-radius: 8px; padding: 16px; }
-        .panel-title { color: #c084fc; font-weight: bold; margin-bottom: 5px; }
-        .status-msg { text-align: center; color: #a855f7; padding: 40px; font-weight: bold; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎬 AI Storyboard Studio</title>
+  <style>
+    :root {
+      --purple: #a855f7;
+      --purple-dim: #7c3aed;
+      --bg: #0b0f19;
+      --card: #0d1117;
+      --surface: #111827;
+      --border: #1f2937;
+      --text: #f3f4f6;
+      --muted: #9ca3af;
+      --mono: 'Courier New', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, sans-serif;
+      padding: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    header { text-align: center; margin-bottom: 30px; }
+    h1 { color: var(--purple); font-size: 26px; margin-bottom: 4px; }
+    .subtitle { color: var(--muted); font-size: 13px; }
+
+    .config {
+      background: var(--surface);
+      padding: 22px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-bottom: 26px;
+    }
+    .row { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
+    .field { flex: 1; min-width: 220px; }
+    label {
+      display: block;
+      font-size: 11px;
+      color: var(--purple);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 6px;
+    }
+    input, select, textarea {
+      width: 100%;
+      background: #030712;
+      border: 1px solid var(--border);
+      color: white;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      outline: none;
+      transition: border-color .15s;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--purple); }
+    textarea {
+      height: 180px;
+      resize: vertical;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    button {
+      background: var(--purple);
+      color: white;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 13px;
+      flex: 1;
+      transition: background .15s, opacity .15s;
+    }
+    button:hover { background: var(--purple-dim); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+    button.secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    button.secondary:hover { border-color: var(--purple); color: var(--purple); background: transparent; }
+
+    .loading-bar { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; margin: 10px 0 6px; }
+    .loading-fill { height: 100%; background: var(--purple); border-radius: 2px; width: 0%; transition: width 0.4s ease; }
+    .status-msg { font-size: 11px; color: var(--muted); font-family: var(--mono); min-height: 16px; margin-bottom: 12px; }
+
+    /* Tier badges */
+    .tier-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .tier1-badge { background: #1d4ed8; color: #bfdbfe; }
+    .tier2-badge { background: #854d0e; color: #fef08a; }
+    .tier3-badge { background: #6b21a8; color: #e9d5ff; }
+
+    /* Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 20px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: grab;
+      transition: border-color .2s, transform .15s;
+    }
+    .card:hover { border-color: #374151; }
+    .card.dragging { opacity: 0.4; transform: scale(0.97); border: 2px dashed var(--purple); }
+    .card-header {
+      padding: 12px 14px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .cut-title { color: #c084fc; font-weight: 700; font-size: 13px; }
+    .preview-frame {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: #111827;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: var(--muted);
+      font-family: var(--mono);
+      text-align: center;
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .card-body { padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--purple);
+      margin-bottom: 4px;
+    }
+    .quote-block {
+      font-style: italic;
+      color: var(--muted);
+      font-size: 12px;
+      background: rgba(168,85,247,.07);
+      padding: 8px 10px;
+      border-left: 3px solid var(--purple);
+      border-radius: 0 4px 4px 0;
+    }
+    .skills-row { display: flex; gap: 6px; flex-wrap: wrap; }
+    .skill-tag {
+      font-size: 11px;
+      background: #1a2236;
+      border: 1px solid #2d3a52;
+      color: #93c5fd;
+      padding: 3px 9px;
+      border-radius: 4px;
+      font-family: var(--mono);
+    }
+    .directive-block {
+      background: rgba(255,255,255,.02);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+    }
+    .directive-text { font-size: 12px; color: #e5e7eb; line-height: 1.7; }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+      font-size: 14px;
+      border: 1px dashed var(--border);
+      border-radius: 10px;
+    }
+    .error-tag {
+      font-size: 11px;
+      background: #3b1010;
+      border: 1px solid #7f1d1d;
+      color: #fca5a5;
+      padding: 3px 9px;
+      border-radius: 4px;
+      font-family: var(--mono);
+    }
+    .error-notice {
+      font-size: 12px;
+      color: #fca5a5;
+      background: #3b1010;
+      border: 1px solid #7f1d1d;
+      border-radius: 6px;
+      padding: 8px 10px;
+      line-height: 1.5;
+    }
+    .dupe-notice {
+      font-size: 11px;
+      color: #fde68a;
+      background: #2d1f04;
+      border: 1px solid #78350f;
+      border-radius: 4px;
+      padding: 4px 9px;
+      margin-bottom: 6px;
+      font-family: var(--mono);
+    }
+  </style>
 </head>
 <body>
 
-    <header>
-        <h1>🎬 AI Storyboard Studio</h1>
-        <p style="color: #9ca3af;">Serverless API Workstation Layout</p>
-    </header>
+<header>
+  <h1>🎬 AI Storyboard Studio</h1>
+  <p class="subtitle">Paste your script, pick your tier, get a production brief per cut.</p>
+</header>
 
-    <div class="config-box">
-        <label>🔑 Hugging Face Fine-Grained Access Token</label>
-        <input type="text" id="hfToken" placeholder="hf_xxxxxxxxxxxxxxxxxxxxxxxxxx">
-        
-        <label>📜 Video Script Input</label>
-        <textarea id="scriptInput" placeholder="Paste your script text blocks here..."></textarea>
-        
-        <button id="generateBtn" onclick="runInference()">⚡ Generate Storyboard</button>
+<div class="config">
+  <div class="row">
+    <div class="field">
+      <label>Hugging Face Token</label>
+      <input type="password" id="hfToken" value="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">
     </div>
+    <div class="field">
+      <label>Production Tier</label>
+      <select id="productionTier">
+        <option value="tier1">🚀 Tier 1 — Speed Run (quick turnaround)</option>
+        <option value="tier2" selected>⏳ Tier 2 — Steady Grind (1–3 days)</option>
+        <option value="tier3">🏆 Tier 3 — Masterpiece (full production)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Your Skills (comma-separated)</label>
+      <input type="text" id="skillsInput" value="Gathering footage, Blender, Motion graphics, Video editing, Photoshop">
+    </div>
+  </div>
+  <label>Video Script</label>
+  <textarea id="scriptInput" placeholder="Paste your video script here..."></textarea>
+  <div class="loading-bar"><div class="loading-fill" id="loadingFill"></div></div>
+  <p class="status-msg" id="statusMsg">Ready.</p>
+  <div class="btn-row">
+    <button id="generateBtn" onclick="runInference()">⚡ Generate Full Sequence</button>
+    <button class="secondary" onclick="exportMarkdown()">📋 Export Markdown</button>
+    <button class="secondary" onclick="exportHTML()">💾 Download as HTML</button>
+  </div>
+</div>
 
-    <label>📋 Rendered Studio Panels</label>
-    <div id="outputContainer">Your generated cards will output here...</div>
+<div id="outputContainer">
+  <div class="empty-state">Your storyboard panels will appear here.</div>
+</div>
 
-    <script>
-        async function runInference() {
-            const token = document.getElementById('hfToken').value.trim();
-            const script = document.getElementById('scriptInput').value.trim();
-            const output = document.getElementById('outputContainer');
-            const btn = document.getElementById('generateBtn');
+<script>
+  const TIER_LABELS = {
+    tier1: 'Tier 1 — Speed Run',
+    tier2: 'Tier 2 — Steady Grind',
+    tier3: 'Tier 3 — Masterpiece'
+  };
 
-            if (!token || !script) return alert("Please fill in both fields!");
+  const TIER_CONTEXT = {
+    tier1: "A few hours max. Shoot something yourself with your phone or find one existing clip. No Canva, no Adobe Spark — use your actual video editor. Lean on timing, sound, and framing. No 3D, no compositing.",
+    tier2: "1–3 days. Simple motion graphics, a basic Blender scene, colour grade, green screen. Nothing requiring render farms.",
+    tier3: "Full production time. Custom Blender renders, frame-by-frame illustration, multi-pass compositing, bespoke VFX."
+  };
 
-            btn.disabled = true;
-            output.innerHTML = `<div class="status-msg">⏳ Pinging Serverless Model Pipeline...</div>`;
+  // Five contrasting few-shot examples — variety prevents the model latching onto one technique
+  const FEW_SHOT = `EXAMPLES — learn the pattern, never copy the wording:
 
-            // Clean direct instruction schema for direct text generation routing
-            const cleanPrompt = `You are an expert storyboard visual planner. Convert the script below into a raw JSON array matching this strict schema template format with exactly 3 panel steps. Do not use any markdown boxes, do not write backticks, do not write explanations. Return only valid array text.
+EXAMPLE A (action / sword fight):
+Input: title "Gai executes Nezu", script "He swiftly executes Nezu with a sword crosscut", asset real_world_broll, tier Tier 1
+Output: {"brief":"Cut hard on the horizontal axis of the swing — find the frame in DaVinci where Nezu's weight shifts back and make that your out-point. Drop the ambient track to near-silence for exactly four frames after the cut lands, then let it bleed back in; the silence is what makes the impact register. Source a shot with lateral camera movement so the edit direction matches the sword arc.","skills":["Video editing","Gathering footage"]}
 
-Expected schema:
-[{"title": "Scene Name", "framing": "Shot Type", "task": "Production action detail"}]
+EXAMPLE B (history / nostalgia):
+Input: title "1988 origins", script "A long time ago in 1988 there was a show called Ronin Warriors", asset retro_anime, tier Tier 1
+Output: {"brief":"Photograph something physical from that era yourself — a CRT screen edge, a worn VHS spine — with a slow push-in, slightly underexposed so the edges go dark. Cut to your main visual on the noun 'Warriors', not before; the word should arrive with the image. In Photoshop, add a faint scan-line overlay at 12% opacity to the still before bringing it into your edit.","skills":["Photography","Photoshop"]}
 
-Script data:
-${script}`;
+EXAMPLE C (character intro):
+Input: title "Yamato barges in", script "Yamato barges through the DST doors uninvited", asset real_world_broll, tier Tier 2
+Output: {"brief":"Frame from below so the doorway dominates the frame before he enters, then cut to a wide that makes the room look cramped around him. Hard audio cut to silence the moment the door opens — let the room ambience bleed back in only after he's spoken his first word. In your editor, find a frame where his silhouette fills the doorway and use that as your cut-in point.","skills":["Gathering footage","Video editing"]}
 
-            try {
-                // Reverted back to the native model execution route that matches Fine-Grained Provider scopes
-                const res = await fetch("https://api-inference.huggingface.co/models/Qwen/Qwen2.5-7B-Instruct", {
-                    method: "POST",
-                    headers: { 
-                        "Authorization": `Bearer ${token}`, 
-                        "Content-Type": "application/json" 
-                    },
-                    body: JSON.stringify({
-                        inputs: cleanPrompt,
-                        parameters: { max_new_tokens: 600, return_full_text: false, temperature: 0.1 }
-                    })
-                });
+EXAMPLE D (sound design moment):
+Input: title "Villain sings while killing", script "The villain begins to sing as he kills civilians, then the full studio track begins", asset real_world_broll, tier Tier 2
+Output: {"brief":"This is a J-cut — the studio track needs to start two seconds before the picture changes so the audience hears the music before they see the scale of what's happening. In your editor, lay the music on a separate track and slide it left until it underlaps the previous shot; automate the ambient SFX down over 12 frames as the track rises. Let the timing feel slightly wrong — the dissonance is the point.","skills":["Video editing"]}
 
-                if (res.status === 503) {
-                    output.innerHTML = `<div class="status-msg">⏳ Model cluster is currently warming up on server nodes. Please click run again in 10 seconds!</div>`;
-                    btn.disabled = false;
-                    return;
-                }
+EXAMPLE E (exposition / world-building):
+Input: title "DST celebrity police force", script "The DST operates as a sort of celebrity police force training the next generation", asset ui_graphic, tier Tier 2
+Output: {"brief":"Open on a wide shot that makes the training space look corporate and sanitised — the contrast between the setting and what Samurai Troopers should look like does the narrative work. Use Motion graphics to build a clean lower-third that introduces the DST acronym on-screen; keep it restrained, news-broadcast style, not action-movie. Cut away before it feels comfortable.","skills":["Motion graphics","Video editing"]}`;
 
-                if (!res.ok) {
-                    const errorDetails = await res.json().catch(() => ({}));
-                    throw new Error(errorDetails.error || `HTTP Error Code: ${res.status}`);
-                }
+  // FORBIDDEN — checked both in prompt and post-generation by sanitiseBrief()
+  const FORBIDDEN = [
+    'canva','adobe spark','google docs','text overlay','keep it simple','keep it basic',
+    'get it done','no need for','simple text','free tool','mobile app','pre-made template',
+    'motion blur peaks','set your playback to half-speed','half-speed in davinci'
+  ];
 
-                const outData = await res.json();
-                let text = Array.isArray(outData) ? outData[0]?.generated_text : outData.generated_text;
+  function buildCombinedSystem(userSkills, tierLabel, tierCtx) {
+    return `You are a video production coach. Return ONLY a raw JSON object — no markdown, no fences, nothing before or after the object.
 
-                if (!text) throw new Error("The pipeline executed successfully but returned a blank payload stream.");
+The object must have exactly two keys:
+- "brief": 3-4 sentences of plain prose production advice
+- "skills": array of 2-3 strings from the creator's skill list
 
-                // Safe bracket alignment isolation parser
-                const startIdx = text.indexOf('[');
-                const endIdx = text.lastIndexOf(']');
-                if (startIdx === -1 || endIdx === -1) throw new Error("The model did not format response as a clean JSON data array.");
+${FEW_SHOT}
 
-                const cleanArray = JSON.parse(text.substring(startIdx, endIdx + 1));
-                
-                output.innerHTML = "";
-                const grid = document.createElement('div');
-                grid.className = "storyboard-grid";
+ABSOLUTE RULES (breaking any one = wrong answer):
+1. brief must name the specific character, sound, or action from THIS cut
+2. brief must describe a concrete editing technique, framing decision, or sound design choice
+3. brief must NOT contain: ${FORBIDDEN.join(', ')}
+4. brief must NOT contain bullet points, numbered lists, asterisks, or section headings
+5. NEVER invent visual details, character actions, colour effects, or plot points not present in the script line — only work with what is given
+6. skills must be chosen from: ${userSkills}
+7. skills logic — pick based on what the cut technically requires:
+   • Real-world footage or stills to source → "Gathering footage"
+   • Animated titles, motion text, lower thirds → "Motion graphics"
+   • 3D environment, object, or character → "Blender"
+   • Retouching, compositing stills, texture creation, graphic assets → "Photoshop"
+   • Edit rhythm, pacing, SFX placement, audio mix → "Video editing"
+8. Do NOT default to ["Gathering footage","Video editing"] — only use that pair if the cut genuinely requires both sourcing AND editing as its primary demands. Most cuts need a more specific skill combination.`;
+  }
 
-                cleanArray.forEach((item, index) => {
-                    const card = document.createElement('div');
-                    card.className = "panel-card";
-                    card.innerHTML = `
-                        <div class="panel-title">🎬 Card ${index + 1}: ${item.title || 'Scene Step'}</div>
-                        <p style="font-size:13px; color:#9ca3af; margin-bottom:8px;">📐 Framing: ${item.framing || 'Standard composition'}</p>
-                        <p style="font-size:13px; color:#e5e7eb;">⚙️ Task: ${item.task || 'Process production files.'}</p>
-                    `;
-                    grid.appendChild(card);
-                });
-                output.appendChild(grid);
+  function setStatus(msg, pct) {
+    document.getElementById('statusMsg').textContent = msg;
+    if (pct !== undefined) document.getElementById('loadingFill').style.width = pct + '%';
+  }
 
-            } catch (err) {
-                output.innerHTML = `
-                    <div style="color:#f87171; padding:15px; border:1px dashed #f87171; border-radius:6px; background: rgba(248,113,113,0.02); line-height: 1.5;">
-                        ❌ Network Exception: ${err.message}<br><br>
-                        <span style="color:#9ca3af; font-size:12px;">
-                            💡 <strong>Quick Fix:</strong> If you are testing this file directly from your computer folders, look at your address bar. If it says <code>file:///</code>, modern web security rules can block out-going API calls. To bypass this restriction instantly, pause your web browser's adblock shields (like Brave Shields or uBlock Origin) on this tab.
-                        </span>
-                    </div>`;
-            }
-            btn.disabled = false;
-        }
-    </script>
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+  // callHF — exponential backoff: 15s, 30s, 45s before giving up
+  async function callHF(token, sys, user, maxTokens = 450, temp = 0.25, attempt = 1) {
+    const res = await fetch('https://router.huggingface.co/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'meta-llama/Meta-Llama-3-8B-Instruct',
+        messages: [{ role: 'system', content: sys }, { role: 'user', content: user }],
+        max_tokens: maxTokens,
+        temperature: temp
+      })
+    });
+
+    if (res.status === 429) {
+      if (attempt > 3) throw new Error('Rate limit: still failing after 3 retries');
+      const wait = attempt * 15000;
+      setStatus(`Rate limited — cooling down ${wait / 1000}s (retry ${attempt}/3)…`);
+      await sleep(wait);
+      return callHF(token, sys, user, maxTokens, temp, attempt + 1);
+    }
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(`HF ${res.status}: ${err.error?.message || res.statusText}`);
+    }
+    const data = await res.json();
+    return data.choices[0].message.content;
+  }
+
+  // Extract {brief, skills} from raw model output — handles partial JSON, trailing text
+  function parseCombined(raw) {
+    try {
+      const s = raw.indexOf('{'), e = raw.lastIndexOf('}');
+      if (s === -1 || e === -1) throw new Error('no object');
+      const obj = JSON.parse(raw.substring(s, e + 1));
+      const brief = typeof obj.brief === 'string' && obj.brief.trim() ? obj.brief.trim() : null;
+      const skills = Array.isArray(obj.skills) && obj.skills.length ? obj.skills : null;
+      return { brief, skills };
+    } catch (_) {
+      return { brief: null, skills: null };
+    }
+  }
+
+  // Strip any formatting that slipped through despite the prompt rules
+  function sanitiseBrief(text) {
+    if (!text) return null;
+    let t = text
+      .replace(/^[\*\-•]\s+/gm, '')
+      .replace(/^\d+\.\s+/gm, '')
+      .replace(/\*\*(.*?)\*\*/g, '$1')
+      .replace(/^(Objective|Action|Technique|Time-Saving Tips?|Emotional Job)[:\s]*/gim, '')
+      .replace(/\n{2,}/g, ' ')
+      .trim();
+    // Flag if forbidden phrases survived — caller will treat as failed
+    const lower = t.toLowerCase();
+    if (FORBIDDEN.some(f => lower.includes(f))) return null;
+    return t;
+  }
+
+  // Validate returned skills against the user's actual list (loose substring match)
+  function validateSkills(skills, userSkills) {
+    if (!Array.isArray(skills)) return null;
+    const userList = userSkills.split(',').map(x => x.trim().toLowerCase());
+    const valid = skills.filter(s =>
+      typeof s === 'string' &&
+      userList.some(u => u.includes(s.toLowerCase()) || s.toLowerCase().includes(u))
+    );
+    return valid.length > 0 ? valid : (skills.length > 0 ? skills : null);
+  }
+
+  // Flag duplicate quotes so the brief prompt can note the framing difference
+  function deduplicateQuotes(cuts) {
+    const seen = new Map();
+    return cuts.map((cut, i) => {
+      const key = cut.q.trim().toLowerCase();
+      if (seen.has(key)) return { ...cut, _duplicateOf: seen.get(key) };
+      seen.set(key, i);
+      return cut;
+    });
+  }
+
+  async function getCutData(token, cut, userSkills, tier) {
+    const tierLabel = TIER_LABELS[tier];
+    const tierCtx = TIER_CONTEXT[tier];
+    const sys = buildCombinedSystem(userSkills, tierLabel, tierCtx);
+    const dupNote = cut._duplicateOf !== undefined
+      ? '\nNOTE: This cut shares a script line with an earlier cut — focus entirely on the framing and technique, not the quote.'
+      : '';
+    const prompt = `Tier: ${tierLabel}
+Time constraint: ${tierCtx}
+Creator skills: ${userSkills}
+
+Cut title: "${cut.t}"
+Shot framing: "${cut.f}"
+Asset type: ${cut.a}
+Script line: "${cut.q}"${dupNote}`;
+
+    try {
+      const raw = await callHF(token, sys, prompt);
+      const { brief, skills } = parseCombined(raw);
+      return {
+        brief: sanitiseBrief(brief),
+        skills: validateSkills(skills, userSkills)
+      };
+    } catch (_) {
+      return { brief: null, skills: null };
+    }
+  }
+
+  // Generate a storyboard image via FLUX.1-schnell on HF Inference API
+  // Returns a base64 data URL or null on failure
+  async function generateImage(token, framing, assetType, attempt = 1) {
+    // Build a concise visual prompt from the shot framing + asset type
+    const styleMap = {
+      retro_anime: 'retro 1980s anime cel animation style, muted colours, film grain',
+      modern_vfx: 'cinematic VFX concept art, dramatic lighting, high contrast',
+      real_world_broll: 'cinematic live action photography, natural lighting, shallow depth of field',
+      ui_graphic: 'clean motion graphic, dark background, glowing UI elements'
+    };
+    const style = styleMap[assetType] || 'cinematic storyboard illustration';
+    const imagePrompt = `Storyboard frame: ${framing}. Style: ${style}. Widescreen 16:9 composition, no text, no watermarks.`;
+
+    try {
+      const res = await fetch('https://router.huggingface.co/black-forest-labs/FLUX.1-schnell', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ inputs: imagePrompt })
+      });
+
+      if (res.status === 429 && attempt <= 2) {
+        await sleep(attempt * 15000);
+        return generateImage(token, framing, assetType, attempt + 1);
+      }
+      if (!res.ok) return null;
+
+      const blob = await res.blob();
+      return new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(blob);
+      });
+    } catch (_) {
+      return null;
+    }
+  }
+
+  async function runInference() {
+    const token = document.getElementById('hfToken').value.trim();
+    const script = document.getElementById('scriptInput').value.trim();
+    const tier = document.getElementById('productionTier').value;
+    const userSkills = document.getElementById('skillsInput').value.trim();
+    const btn = document.getElementById('generateBtn');
+
+    if (!token || !script) { alert('Please enter your HF token and a script.'); return; }
+    btn.disabled = true;
+    document.getElementById('outputContainer').innerHTML = '';
+    setStatus('Analysing script…', 5);
+
+    try {
+      // Step 1 — parse script into cuts (one call)
+      const parseSys = `You are a film production assistant. Break a video script into individual visual cuts. Each cut must use a UNIQUE excerpt from the script — never repeat the same q value across two cuts. Return ONLY a JSON array, no markdown fences, no extra text. Each element: t (title, max 6 words), f (shot framing description, one descriptive phrase suitable as an image prompt), q (unique script excerpt, 1-2 sentences), a (one of: retro_anime / modern_vfx / real_world_broll / ui_graphic).`;
+      const rawText = await callHF(token, parseSys, script, 2000, 0.1);
+      setStatus('Parsing cuts…', 12);
+
+      const s = rawText.indexOf('['), e = rawText.lastIndexOf(']');
+      let cuts = JSON.parse(rawText.substring(s, e + 1));
+      cuts = deduplicateQuotes(cuts);
+
+      const tierLabel = TIER_LABELS[tier];
+      const briefs = [], skillSets = [], images = [];
+
+      // Cooldown: 3s base + 200ms per cut over 8 — more aggressive than before
+      const baseCooldown = 3000;
+      const extraPerCut = Math.max(0, cuts.length - 8) * 200;
+      const cooldown = baseCooldown + extraPerCut;
+
+      // Step 2 — per cut: brief + image in parallel, then cooldown
+      for (let i = 0; i < cuts.length; i++) {
+        const pct = 12 + Math.round(((i + 1) / cuts.length) * 83);
+        setStatus(`Cut ${i + 1} / ${cuts.length} — writing brief & generating image…`, pct);
+
+        const [cutData, imgSrc] = await Promise.all([
+          getCutData(token, cuts[i], userSkills, tier),
+          generateImage(token, cuts[i].f, cuts[i].a)
+        ]);
+
+        briefs.push(cutData.brief);
+        skillSets.push(cutData.skills);
+        images.push(imgSrc);
+
+        if (i < cuts.length - 1) await sleep(cooldown);
+      }
+
+      setStatus('Rendering storyboard…', 97);
+      renderStoryboard(cuts, briefs, skillSets, images, tier, tierLabel);
+      setStatus(`Done — ${cuts.length} cuts generated.`, 100);
+
+    } catch (err) {
+      setStatus('⚠ Error: ' + err.message, 0);
+      console.error(err);
+    }
+    btn.disabled = false;
+  }
+
+  function renderStoryboard(cuts, briefs, skillSets, images, tier, tierLabel) {
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+    grid.id = 'sortable-grid';
+
+    const badgeClass = `${tier}-badge`;
+
+    cuts.forEach((item, i) => {
+      const brief = briefs[i];
+      const skills = skillSets[i];
+      const imgSrc = images[i];
+
+      const skillsHTML = !skills
+        ? `<span class="error-tag">⚠ Skills unavailable</span>`
+        : skills.map(s => `<span class="skill-tag">${s}</span>`).join('');
+
+      const briefHTML = !brief
+        ? `<div class="error-notice">⚠ Brief unavailable — HF API did not return a valid response for this cut.</div>`
+        : `<div class="directive-text">${brief}</div>`;
+
+      const dupWarning = item._duplicateOf !== undefined
+        ? `<div class="dupe-notice">⚠ Same script line as Cut ${item._duplicateOf + 1} — check source script</div>`
+        : '';
+
+      // Image frame: show generated image if available, otherwise show framing text
+      const previewHTML = imgSrc
+        ? `<img src="${imgSrc}" alt="Storyboard frame for cut ${i+1}" style="width:100%;aspect-ratio:16/9;object-fit:cover;display:block;">`
+        : `<div class="preview-frame">${item.f}</div>`;
+
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.draggable = true;
+
+      card.innerHTML = `
+        <div class="card-header">
+          <span class="cut-title">Cut ${i+1}: ${item.t}</span>
+          <span class="tier-badge ${badgeClass}">${tierLabel.split('—')[0].trim()}</span>
+        </div>
+        ${previewHTML}
+        <div class="card-body">
+          <div>
+            <div class="section-label">Script line</div>
+            ${dupWarning}
+            <div class="quote-block">"${item.q}"</div>
+          </div>
+          <div>
+            <div class="section-label">Skills to use</div>
+            <div class="skills-row">${skillsHTML}</div>
+          </div>
+          <div>
+            <div class="section-label">Production brief</div>
+            <div class="directive-block">${briefHTML}</div>
+          </div>
+        </div>
+      `;
+
+      card.addEventListener('dragstart', () => card.classList.add('dragging'));
+      card.addEventListener('dragend', () => card.classList.remove('dragging'));
+      grid.appendChild(card);
+    });
+
+    grid.addEventListener('dragover', e => {
+      e.preventDefault();
+      const after = [...grid.querySelectorAll('.card:not(.dragging)')].reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = e.clientY - box.top - box.height / 2;
+        return offset < 0 && offset > closest.offset ? { offset, element: child } : closest;
+      }, { offset: Number.NEGATIVE_INFINITY }).element;
+      const dragging = document.querySelector('.dragging');
+      if (dragging) after ? grid.insertBefore(dragging, after) : grid.appendChild(dragging);
+    });
+
+    const container = document.getElementById('outputContainer');
+    container.innerHTML = '';
+    container.appendChild(grid);
+  }
+
+  function exportMarkdown() {
+    const cards = document.querySelectorAll('.card');
+    if (!cards.length) { alert("Generate a storyboard first."); return; }
+    let md = "# 🎬 Storyboard Export\n\n";
+    cards.forEach((c, i) => {
+      // FIX: strip the "Cut N: " prefix from cut-title so the heading doesn't duplicate it
+      const rawTitle = c.querySelector('.cut-title')?.innerText || '';
+      const title = rawTitle.replace(/^Cut \d+:\s*/i, '');
+      const quote = c.querySelector('.quote-block')?.innerText || '';
+      const skills = [...c.querySelectorAll('.skill-tag')].map(s => s.innerText).join(', ') || 'N/A';
+      const brief = c.querySelector('.directive-text')?.innerText || c.querySelector('.error-notice')?.innerText || '';
+      md += `## Cut ${i+1}: ${title}\n\n**Script line:** ${quote}\n\n**Skills:** ${skills}\n\n**Brief:** ${brief}\n\n---\n\n`;
+    });
+    const blob = new Blob([md], { type: 'text/markdown' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'storyboard-export.md';
+    a.click();
+  }
+
+  function exportHTML() {
+    const cards = document.querySelectorAll('.card');
+    if (!cards.length) { alert("Generate a storyboard first."); return; }
+
+    const tier = document.getElementById('productionTier').value;
+    const tierLabel = TIER_LABELS[tier];
+    const skills = document.getElementById('skillsInput').value;
+    const now = new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+
+    let cardHTML = '';
+    cards.forEach((c, i) => {
+      cardHTML += c.outerHTML + '\n';
+    });
+
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Storyboard Export — ${now}</title>
+  <style>
+    :root { --purple:#a855f7; --bg:#0b0f19; --card:#0d1117; --surface:#111827; --border:#1f2937; --text:#f3f4f6; --muted:#9ca3af; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { background:var(--bg); color:var(--text); font-family:system-ui,sans-serif; padding:30px; max-width:1200px; margin:0 auto; }
+    h1 { color:var(--purple); font-size:24px; margin-bottom:4px; }
+    .meta { color:var(--muted); font-size:12px; margin-bottom:24px; font-family:'Courier New',monospace; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(360px,1fr)); gap:20px; }
+    .card { background:var(--card); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+    .card-header { padding:12px 14px; background:var(--surface); border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+    .cut-title { color:#c084fc; font-weight:700; font-size:13px; }
+    .tier-badge { display:inline-block; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; padding:2px 8px; border-radius:4px; }
+    .tier1-badge { background:#1d4ed8; color:#bfdbfe; }
+    .tier2-badge { background:#854d0e; color:#fef08a; }
+    .tier3-badge { background:#6b21a8; color:#e9d5ff; }
+    .preview-frame { width:100%; aspect-ratio:16/9; background:#111827; display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--muted); font-family:'Courier New',monospace; text-align:center; padding:12px; border-bottom:1px solid var(--border); }
+    .card img { width:100%; aspect-ratio:16/9; object-fit:cover; display:block; border-bottom:1px solid var(--border); }
+    .card-body { padding:14px; display:flex; flex-direction:column; gap:12px; }
+    .section-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--purple); margin-bottom:4px; }
+    .quote-block { font-style:italic; color:var(--muted); font-size:12px; background:rgba(168,85,247,.07); padding:8px 10px; border-left:3px solid var(--purple); border-radius:0 4px 4px 0; }
+    .skills-row { display:flex; gap:6px; flex-wrap:wrap; }
+    .skill-tag { font-size:11px; background:#1a2236; border:1px solid #2d3a52; color:#93c5fd; padding:3px 9px; border-radius:4px; font-family:'Courier New',monospace; }
+    .directive-block { background:rgba(255,255,255,.02); border:1px solid var(--border); border-radius:6px; padding:10px 12px; }
+    .directive-text { font-size:12px; color:#e5e7eb; line-height:1.7; }
+  </style>
+</head>
+<body>
+  <h1>🎬 Storyboard Export</h1>
+  <p class="meta">Generated ${now} &nbsp;·&nbsp; ${tierLabel} &nbsp;·&nbsp; Skills: ${skills}</p>
+  <div class="grid">
+    ${cardHTML}
+  </div>
+</body>
+</html>`;
+
+    const blob = new Blob([html], { type: 'text/html' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `storyboard-${now.replace(/ /g,'-')}.html`;
+    a.click();
+  }
+</script>
 </body>
 </html>
